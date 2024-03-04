@@ -1,7 +1,28 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:arosaje_flutter/pages/ville_page.dart';
 
 void main() {
+  // Allow all certificates (including self-signed certificates)
+  HttpClient httpClient = HttpClient()
+    ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+
+  // Configure the default HttpClient to use this custom one
+  HttpOverrides.global = MyHttpOverrides(httpClient);
+
   runApp(MyApp());
+}
+
+// Define a custom class to override the HttpClient
+class MyHttpOverrides extends HttpOverrides {
+  final HttpClient _httpClient;
+
+  MyHttpOverrides(this._httpClient);
+
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return _httpClient;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -26,22 +47,24 @@ class MyHomePage extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Icône/logo
             Image.asset(
-              'image/logo.png', 
-              width: 95, 
-              height: 95, 
+              'assets/image/logo.png', 
+              width: 65, 
+              height: 65, 
             ),
             Row(
               children: [
                 HeaderLink(text: 'Plantes', onPressed: () {
                   // a faire la logique 
                 }),
-                SizedBox(width: 20), 
+                SizedBox(width: 5), 
                 HeaderLink(text: 'Villes', onPressed: () {
-                  // a faire la logique 
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VillesPage()),
+                  );
                 }),
-                SizedBox(width: 20),
+                SizedBox(width: 5),
                 HeaderLink(text: 'Message', onPressed: () {
                  // a faire la logique 
                 }),
@@ -100,8 +123,7 @@ class MyHomePage extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    Image.asset(
-                      'image/arosaje-accueil-1.jpg',
+                    Image.asset('assets/image/arosaje-accueil-1.jpg',
                       width: 500,
                       height: 200,
                     ),
@@ -116,7 +138,7 @@ class MyHomePage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.9),
                 image: DecorationImage(
-                  image: AssetImage('image/background-image.jpg'),
+                  image: AssetImage('assets/image/background-image.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
