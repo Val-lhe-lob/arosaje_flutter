@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:arosaje_flutter/pages/ville_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'Mon Application',
       theme: ThemeData(
         primaryColor: Colors.white,
-        fontFamily: 'IndieFlower', 
+        fontFamily: 'IndieFlower',
       ),
       home: MyHomePage(),
     );
@@ -26,32 +27,39 @@ class MyHomePage extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Icône/logo
             Image.asset(
-              'image/logo.png', 
-              width: 95, 
-              height: 95, 
+              'assets/image/logo.png',
+              width: 50,
+              height: 50,
             ),
             Row(
               children: [
-                HeaderLink(text: 'Plantes', onPressed: () {
-                  // a faire la logique 
-                }),
-                SizedBox(width: 20), 
-                HeaderLink(text: 'Villes', onPressed: () {
-                  // a faire la logique 
-                }),
-                SizedBox(width: 20),
-                HeaderLink(text: 'Message', onPressed: () {
-                 // a faire la logique 
-                }),
+                HeaderLink(
+                    text: 'Plantes',
+                    onPressed: () {
+                      // a faire la logique
+                    }),
+                SizedBox(width: 2),
+                HeaderLink(
+                    text: 'Villes',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => VillesPage()),
+                      );
+                    }),
+                SizedBox(width: 2),
+                HeaderLink(
+                    text: 'Message',
+                    onPressed: () {
+                      // a faire la logique
+                    }),
               ],
             ),
-
             IconButton(
               icon: Icon(Icons.account_circle),
               onPressed: () {
-                // a faire la logique 
+                // a faire la logique
               },
             ),
           ],
@@ -101,7 +109,7 @@ class MyHomePage extends StatelessWidget {
                       ),
                     ),
                     Image.asset(
-                      'image/arosaje-accueil-1.jpg',
+                      'assets/image/arosaje-accueil-1.jpg',
                       width: 500,
                       height: 200,
                     ),
@@ -116,7 +124,7 @@ class MyHomePage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.9),
                 image: DecorationImage(
-                  image: AssetImage('image/background-image.jpg'),
+                  image: AssetImage('assets/image/background-image.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -134,14 +142,14 @@ class MyHomePage extends StatelessWidget {
                   SizedBox(height: 50),
                   ElevatedButton(
                     onPressed: () {
-                      // a faire la logique 
+                      // a faire la logique
                     },
                     child: Text('Test 1'),
                   ),
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      // a faire la logique 
+                      // a faire la logique
                     },
                     child: Text('Test 2'),
                   ),
@@ -174,7 +182,7 @@ class HeaderLink extends StatelessWidget {
           text,
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -182,3 +190,5 @@ class HeaderLink extends StatelessWidget {
     );
   }
 }
+
+
