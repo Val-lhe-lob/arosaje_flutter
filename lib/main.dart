@@ -1,28 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
 
 void main() {
-  // Allow all certificates (including self-signed certificates)
-  HttpClient httpClient = HttpClient()
-    ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
-
-  // Configure the default HttpClient to use this custom one
-  HttpOverrides.global = MyHttpOverrides(httpClient);
-
   runApp(MyApp());
-}
-
-// Define a custom class to override the HttpClient
-class MyHttpOverrides extends HttpOverrides {
-  final HttpClient _httpClient;
-
-  MyHttpOverrides(this._httpClient);
-
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return _httpClient;
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'Mon Application',
       theme: ThemeData(
         primaryColor: Colors.white,
-        fontFamily: 'IndieFlower', 
+        fontFamily: 'IndieFlower',
       ),
       home: MyHomePage(),
     );
@@ -48,33 +28,38 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
-              'assets/image/logo.png', 
-              width: 65, 
-              height: 65, 
+              'assets/image/logo.png',
+              width: 50,
+              height: 50,
             ),
             Row(
               children: [
-                HeaderLink(text: 'Plantes', onPressed: () {
-                  // a faire la logique 
-                }),
-                SizedBox(width: 5), 
-                HeaderLink(text: 'Villes', onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => VillesPage()),
-                  );
-                }),
-                SizedBox(width: 5),
-                HeaderLink(text: 'Message', onPressed: () {
-                 // a faire la logique 
-                }),
+                HeaderLink(
+                    text: 'Plantes',
+                    onPressed: () {
+                      // a faire la logique
+                    }),
+                SizedBox(width: 2),
+                HeaderLink(
+                    text: 'Villes',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => VillesPage()),
+                      );
+                    }),
+                SizedBox(width: 2),
+                HeaderLink(
+                    text: 'Message',
+                    onPressed: () {
+                      // a faire la logique
+                    }),
               ],
             ),
-
             IconButton(
               icon: Icon(Icons.account_circle),
               onPressed: () {
-                // a faire la logique 
+                // a faire la logique
               },
             ),
           ],
@@ -123,7 +108,8 @@ class MyHomePage extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    Image.asset('assets/image/arosaje-accueil-1.jpg',
+                    Image.asset(
+                      'assets/image/arosaje-accueil-1.jpg',
                       width: 500,
                       height: 200,
                     ),
@@ -156,14 +142,14 @@ class MyHomePage extends StatelessWidget {
                   SizedBox(height: 50),
                   ElevatedButton(
                     onPressed: () {
-                      // a faire la logique 
+                      // a faire la logique
                     },
                     child: Text('Test 1'),
                   ),
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      // a faire la logique 
+                      // a faire la logique
                     },
                     child: Text('Test 2'),
                   ),
@@ -196,7 +182,7 @@ class HeaderLink extends StatelessWidget {
           text,
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 16,
+            fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -204,3 +190,5 @@ class HeaderLink extends StatelessWidget {
     );
   }
 }
+
+
