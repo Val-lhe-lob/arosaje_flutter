@@ -1,3 +1,4 @@
+import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
 
@@ -37,6 +38,10 @@ class MyHomePage extends StatelessWidget {
                 HeaderLink(
                     text: 'Plantes',
                     onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PlantesPage()),
+                      );
                       // a faire la logique
                     }),
                 SizedBox(width: 2),
