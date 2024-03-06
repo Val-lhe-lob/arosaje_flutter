@@ -5,9 +5,12 @@ import 'dart:convert';
 class VillesService {
   static Future<List<Ville>> getVilles() async {
     try {
-      var response = await http.get(
-        Uri.parse('https://localhost:7239/api/Villes'));
-      
+      var client = http.Client();
+      var response = await client.get(
+        Uri.parse('http://192.168.1.14:32777/api/Villes'),
+        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+      );
+
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         return data.map((json) => Ville.fromJson(json)).toList();
