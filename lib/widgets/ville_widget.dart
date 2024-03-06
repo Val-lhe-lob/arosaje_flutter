@@ -13,17 +13,21 @@ class VillesListWidget extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text(snapshot.error.toString()); // Handle error case
         } else {
-          final villes = snapshot.data!;
-          return ListView.builder(
-            itemCount: villes.length,
-            itemBuilder: (context, index) {
-              final ville = villes[index];
-              return ListTile(
-                title: Text(ville.nom),
-                subtitle: Text(ville.desc ?? ''), // Use Ville model properties
-              );
-            },
-          );
+          final villes = snapshot.data;
+          if (villes == null) {
+            return Text('No data available'); // Handle case where data is null
+          } else {
+            return ListView.builder(
+              itemCount: villes.length,
+              itemBuilder: (context, index) {
+                final ville = villes[index];
+                return ListTile(
+                  title: Text(ville.nom ?? ''),
+                  subtitle: Text(ville.desc ?? ''), // Use Ville model properties
+                );
+              },
+            );
+          }
         }
       },
     );
