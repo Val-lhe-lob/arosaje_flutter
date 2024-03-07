@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
-import 'package:arosaje_flutter/pages/ville_page.dart';
-import 'package:arosaje_flutter/pages/map_page.dart'; // Importez la page de la carte
+import 'package:arosaje_flutter/pages/ville_page.dart'; // Importez la page de la carte
 import 'header.dart';
+import 'package:arosaje_flutter/pages/connexion_page.dart'; // Importez la page de connexion
+import 'package:arosaje_flutter/pages/inscription_page.dart'; // Importez la page d'inscription
 
 void main() {
   runApp(MyApp());
@@ -41,8 +42,16 @@ class MyHomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => VillesPage()),
               );
             } else if (text == 'Message') {
-              // Ajoutez votre logique pour le lien "Message" ici.
+              // ajouter la logique
             }
+          },
+          onProfileTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ProfileDialog();
+              },
+            );
           },
         ),
       ),
@@ -84,15 +93,12 @@ class MyHomePage extends StatelessWidget {
                     width: 500,
                     height: 200,
                   ),
-                  SizedBox(height: 20), // Espacement entre le texte et le bouton
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MapPage()), // Redirige vers la page de la carte
-                      );
+                      // Logique pour voir la carte
                     },
-                    child: Text('Voir la carte'), // Texte du bouton
+                    child: Text('Voir la carte'),
                   ),
                 ],
               ),
@@ -143,29 +149,33 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-class HeaderLink extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-
-  const HeaderLink({
-    required this.text,
-    required this.onPressed,
-  });
-
+class ProfileDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+    return AlertDialog(
+      title: Text("Vous n'êtes pas connecté"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConnexionPage()),
+              );
+            },
+            child: Text('Se connecter'),
           ),
-        ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => InscriptionPage()),
+              );
+            },
+            child: Text('Créer un compte'),
+          ),
+        ],
       ),
     );
   }

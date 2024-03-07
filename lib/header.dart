@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
   final Function(String) onHeaderLinkTap;
+  final VoidCallback? onProfileTap;
 
   const Header({
     required this.onHeaderLinkTap,
+    this.onProfileTap,
   });
 
   @override
@@ -44,9 +46,7 @@ class Header extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.account_circle),
-            onPressed: () {
-              // Ajoutez votre logique pour le bouton de l'icône du compte ici.
-            },
+            onPressed: onProfileTap,
           ),
         ],
       ),
