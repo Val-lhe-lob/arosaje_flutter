@@ -1,6 +1,8 @@
-import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:flutter/material.dart';
+import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
+import 'package:arosaje_flutter/pages/map_page.dart'; // Importez la page de la carte
+import 'header.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,102 +26,75 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Image.asset(
-              'assets/image/logo.png',
-              width: 50,
-              height: 50,
-            ),
-            Row(
-              children: [
-                HeaderLink(
-                    text: 'Plantes',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PlantesPage()),
-                      );
-                      // a faire la logique
-                    }),
-                SizedBox(width: 2),
-                HeaderLink(
-                    text: 'Villes',
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => VillesPage()),
-                      );
-                    }),
-                SizedBox(width: 2),
-                HeaderLink(
-                    text: 'Message',
-                    onPressed: () {
-                      // a faire la logique
-                    }),
-              ],
-            ),
-            IconButton(
-              icon: Icon(Icons.account_circle),
-              onPressed: () {
-                // a faire la logique
-              },
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(2.0),
-          child: Container(
-            color: Colors.black,
-            height: 1,
-          ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Header(
+          onHeaderLinkTap: (String text) {
+            if (text == 'Plantes') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PlantesPage()),
+              );
+            } else if (text == 'Villes') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => VillesPage()),
+              );
+            } else if (text == 'Message') {
+              // Ajoutez votre logique pour le lien "Message" ici.
+            }
+          },
         ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.white, Color(0xFF008B16)],
-                ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.white, Color(0xFF008B16)],
               ),
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Arosaje c'est quoi ?",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+            ),
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Arosaje c'est quoi ?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    Text(
-                      'bla bla bla',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black,
-                      ),
+                  ),
+                  Text(
+                    'bla bla bla',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
                     ),
-                    Image.asset(
-                      'assets/image/arosaje-accueil-1.jpg',
-                      width: 500,
-                      height: 200,
-                    ),
-                  ],
-                ),
+                  ),
+                  Image.asset(
+                    'assets/image/arosaje-accueil-1.jpg',
+                    width: 500,
+                    height: 200,
+                  ),
+                  SizedBox(height: 20), // Espacement entre le texte et le bouton
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapPage()), // Redirige vers la page de la carte
+                      );
+                    },
+                    child: Text('Voir la carte'), // Texte du bouton
+                  ),
+                ],
               ),
             ),
           ),
@@ -195,5 +170,3 @@ class HeaderLink extends StatelessWidget {
     );
   }
 }
-
-
