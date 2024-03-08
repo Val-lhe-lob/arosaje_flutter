@@ -1,29 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:arosaje_flutter/services/ville_service.dart'; // Import VillesService
+import 'package:arosaje_flutter/services/ville_service.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
 
 class VillesListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Ville>>(
-      future: VillesService.getVilles(), // Call getVilles() from VillesService
+      future: VillesService.getVilles(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Text(snapshot.error.toString()); // Handle error case
+          return Center(child: Text(snapshot.error.toString()));
         } else {
           final villes = snapshot.data;
-          if (villes == null) {
-            return Text('No data available'); // Handle case where data is null
+          if (villes == null || villes.isEmpty) {
+            return Center(child: Text('Aucune donnée disponible'));
           } else {
             return ListView.builder(
               itemCount: villes.length,
               itemBuilder: (context, index) {
                 final ville = villes[index];
-                return ListTile(
-                  title: Text(ville.nom ?? ''),
-                  subtitle: Text(ville.desc ?? ''), // Use Ville model properties
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 246, 250,1),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text(ville.nom ?? ''),
+                        subtitle: Text(ville.desc ?? ''),
+                      ),
+                      SizedBox(height: 8.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          // logique à implémenter
+                        },
+                        child: Text('Voir toutes les plantes de cette ville'),
+                      ),
+                    ],
+                  ),
                 );
               },
             );

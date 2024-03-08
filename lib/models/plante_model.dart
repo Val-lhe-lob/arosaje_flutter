@@ -1,25 +1,49 @@
 class Plante {
   final int idPlante;
-  final String nom;
-  final String desc;
-  final List<dynamic> ville;
-  final List<dynamic> idUtilisateurs;
+  final String? espece;
+  final String? description;
+  final String? categorie;
+  final String? etat;
+  final String? nom;
+  final int? lon;
+  final int? lat;
+  final int? idVille;
+  final int? idPhoto;
+  final int? idUtilisateur;
+  final int? idUtilisateur1;
+  final List<dynamic>? idTips;
 
   Plante({
     required this.idPlante,
-    required this.nom,
-    required this.desc,
-    required this.ville,
-    required this.idUtilisateurs,
+    this.espece,
+    this.description,
+    this.categorie,
+    this.etat,
+    this.nom,
+    this.lon,
+    this.lat,
+    this.idVille,
+    this.idPhoto,
+    this.idUtilisateur,
+    this.idUtilisateur1,
+    this.idTips,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {
     return Plante(
       idPlante: json['idPlante'],
+      espece: json['espece'],
+      description: json['description'],
+      categorie: json['categorie'],
+      etat: json['etat'],
       nom: json['nom'],
-      desc: json['desc'],
-      ville: json['ville'],
-      idUtilisateurs: json['idUtilisateurs'],
+      lon: json['lon'],
+      lat: json['lat'],
+      idVille: json['idVille'],
+      idPhoto: json['idPhoto'],
+      idUtilisateur: json['idUtilisateur'],
+      idUtilisateur1: json['idUtilisateur1'],
+      idTips: json['idTips'],
     );
   }
 }

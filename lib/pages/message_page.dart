@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:arosaje_flutter/widgets/plante_widget.dart';
+import 'package:arosaje_flutter/widgets/message_widget.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
-import 'package:arosaje_flutter/pages/message_page.dart';
 import 'package:arosaje_flutter/header.dart';
 import 'package:arosaje_flutter/pages/connexion_page.dart'; 
 import 'package:arosaje_flutter/pages/inscription_page.dart'; 
 
-class PlantesPage extends StatelessWidget {
+class MessagesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,10 +13,10 @@ class PlantesPage extends StatelessWidget {
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: Header(
           onHeaderLinkTap: (String text) {
-            if (text == 'Plantes') {
+            if (text == 'Messages') {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PlantesPage()),
+                MaterialPageRoute(builder: (context) => MessagesPage()),
               );
             } else if (text == 'Villes') {
               Navigator.push(
@@ -25,10 +24,7 @@ class PlantesPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => VillesPage()),
               );
             } else if (text == 'Message') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MessagesPage()),
-              );
+              // Add your logic for the "Message" link here.
             }
           },
           onProfileTap: () {
@@ -42,7 +38,7 @@ class PlantesPage extends StatelessWidget {
         ),
       ),
       body: Container(
-        child: PlantesListWidget(),
+        child: MessagesListWidget(),
       ),
     );
   }

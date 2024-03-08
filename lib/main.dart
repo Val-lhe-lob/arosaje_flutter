@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
-import 'package:arosaje_flutter/pages/ville_page.dart'; // Importez la page de la carte
+import 'package:arosaje_flutter/pages/ville_page.dart'; 
+import 'package:arosaje_flutter/pages/message_page.dart'; 
 import 'header.dart';
-import 'package:arosaje_flutter/pages/connexion_page.dart'; // Importez la page de connexion
-import 'package:arosaje_flutter/pages/inscription_page.dart'; // Importez la page d'inscription
+import 'package:arosaje_flutter/pages/connexion_page.dart'; 
+import 'package:arosaje_flutter/pages/inscription_page.dart'; 
+import 'package:arosaje_flutter/pages/inscription_plante_page.dart'; 
 
 void main() {
   runApp(MyApp());
@@ -42,7 +44,10 @@ class MyHomePage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => VillesPage()),
               );
             } else if (text == 'Message') {
-              // ajouter la logique
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MessagesPage()),
+              );
             }
           },
           onProfileTap: () {
@@ -67,7 +72,7 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             child: Container(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -80,25 +85,28 @@ class MyHomePage extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  Text(
-                    'bla bla bla',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
+                  
                   Image.asset(
                     'assets/image/arosaje-accueil-1.jpg',
                     width: 500,
                     height: 200,
+                  ),SizedBox(height: 15),Text(
+                    'A Rosa-je c’est une entreprise de conseil et d’entretien botanique qui vous permettra de garder vos plantes avec nos membres de la même ville que vous ! ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 15),
                   ElevatedButton(
                     onPressed: () {
                       // Logique pour voir la carte
                     },
                     child: Text('Voir la carte'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                    ),
                   ),
                 ],
               ),
@@ -108,17 +116,18 @@ class MyHomePage extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.9),
+                color: const Color(0xff7c94b6),
                 image: DecorationImage(
                   image: AssetImage('assets/image/background-image.jpg'),
                   fit: BoxFit.cover,
+                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.dstATop),
                 ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Bla Bla',
+                    'Une plante à faire garder par notre communauté ? Vous voulez garder une plante ?',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -130,14 +139,25 @@ class MyHomePage extends StatelessWidget {
                     onPressed: () {
                       // a faire la logique
                     },
-                    child: Text('Test 1'),
+                    child: Text('Voir les plantes'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                    ),
                   ),
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      // a faire la logique
+                                {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => InscriptionPlantePage()),
+                        );
+                      };
                     },
-                    child: Text('Test 2'),
+                    child: Text('Faire garder une plante'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                    ),
                   ),
                 ],
               ),
@@ -165,6 +185,9 @@ class ProfileDialog extends StatelessWidget {
               );
             },
             child: Text('Se connecter'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -174,6 +197,9 @@ class ProfileDialog extends StatelessWidget {
               );
             },
             child: Text('Créer un compte'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+            ),
           ),
         ],
       ),

@@ -1,13 +1,14 @@
 import 'package:http/http.dart' as http;
 import 'package:arosaje_flutter/models/ville_model.dart';
 import 'dart:convert';
+import '../config.dart';
 
 class VillesService {
   static Future<List<Ville>> getVilles() async {
     try {
       var client = http.Client();
       var response = await client.get(
-        Uri.parse('http://192.168.1.14:32777/api/Villes'),
+        Uri.parse(Config.apiUrl+'api/Villes'),
         headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
       );
 
