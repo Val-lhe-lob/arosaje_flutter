@@ -24,7 +24,10 @@ class MessagesPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => VillesPage()),
               );
             } else if (text == 'Message') {
-              // Add your logic for the "Message" link here.
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MessagesPage()),
+              );
             }
           },
           onProfileTap: () {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/services/plante_service.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
+import 'package:arosaje_flutter/pages/plante_detail_page.dart';
 
 class PlantesListWidget extends StatelessWidget {
   @override
@@ -30,7 +31,12 @@ class PlantesListWidget extends StatelessWidget {
                   subtitle: Text(plante.description ?? ''),
                   trailing: ElevatedButton(
                     onPressed: () {
-                      // faire la logique
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlanteDetailPage(plante: plante),
+                          ),
+                        );
                     },
                     child: Text('Détail'),
                   ),

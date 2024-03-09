@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/services/ville_service.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
+import 'package:arosaje_flutter/pages/ville_detail_page.dart';
 
 class VillesListWidget extends StatelessWidget {
   @override
@@ -38,7 +39,12 @@ class VillesListWidget extends StatelessWidget {
                       SizedBox(height: 8.0),
                       ElevatedButton(
                         onPressed: () {
-                          // logique à implémenter
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VilleDetailPage(ville: ville),
+                          ),
+                        );
                         },
                         child: Text('Voir toutes les plantes de cette ville'),
                       ),
