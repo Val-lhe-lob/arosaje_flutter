@@ -1,9 +1,9 @@
 import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:arosaje_flutter/services/connexion_service.dart';
+import 'package:arosaje_flutter/services/user_information_service.dart';
 
 class ConnexionPage extends StatefulWidget {
   @override
@@ -55,21 +55,25 @@ class _ConnexionPageState extends State<ConnexionPage> {
             ),
             SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
 
                 var bytes = utf8.encode(_passwordController.text);
                   var digest = sha256.convert(bytes); 
                   String hashedPassword = digest.toString();
-                  var test = ConnexionService.connexion(
+                  var _connexion_service = ConnexionService();
+                  var test = _connexion_service.authenticate(
                     _emailController.text,
                     hashedPassword,
                     
                   );
-
-                  if(test == 1){
-                      
-                  }
-              //_emailController.text et _passwordController.text
+                if ( await test ){
+                  var _user_information_service = UserInformationService();
+                  var data = _user_information_service.getAuthenticatedData(_emailController.text);
+                  
+                    
+                  
+                }
+                
               },
               child: Text('Se connecter'),
             ),

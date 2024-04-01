@@ -1,37 +1,37 @@
 import 'package:http/http.dart' as http;
-import 'package:arosaje_flutter/models/utilisateur_model.dart';
 import 'dart:convert';
-import '../config.dart';
+import '../secure_local_storage_token.dart';
 
 class ConnexionService {
-  static Future<int> connexion(String email, String password) async {
-    try {
-      var client = http.Client();
-      var response = await client.get(
-        Uri.parse(Config.apiUrl + 'api/Utilisateurs/name/' + email),
-        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-      );
+  final _baseUrl = 'https://yourapi.com';
+  final TokenStorage _tokenStorage = TokenStorage();
 
-      if (response.statusCode == 200) {
-        var utilisateurJson = jsonDecode(response.body);
-        Utilisateur utilisateur = Utilisateur.fromJson(utilisateurJson);
-        
-        if (utilisateur != null) {
-          if (utilisateur.mdp == password) {
-            return 1; // L'utilisateur existe et password correct
-          } else {
-            return 3; // L'utilisateur existe mais mauvais mdp
-          }
-        } else {
-          return 2; // L'utilisateur n'existe pas
-        }
-      } else {
-        return 4; // Error in API response
-      }
-    } catch (error) {
-      throw Exception('Erreur lors de la requête HTTP: $error');
+  Future<bool> authenticate(String email, String mdp) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/Token'),
+      body: jsonEncode({
+        "email": email,
+        "mdp": mdp,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if ( response.statusCode != 200 ){
+      return false;
+    }
+
+    else if (response.statusCode == 200) {
+      final token = json.decode(response.body)['token'];
+      await _tokenStorage.storeToken(token); // Store the token
+      return true;
+    } else {
+      throw Exception('Failed to authenticate');
+
     }
     
-    return 4; 
+  }
+
+  Future<bool> isLoggedIn() async {
+    final token = await _tokenStorage.getToken();
+    return token != null;
   }
 }
