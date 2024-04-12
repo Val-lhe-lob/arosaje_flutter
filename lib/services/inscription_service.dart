@@ -18,7 +18,7 @@ class InscriptionService {
         headers: {'Content-Type': 'application/json'},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode==201) {
         print("ça a reussi normalement");
         
         return true;

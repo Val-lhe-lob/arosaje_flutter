@@ -1,3 +1,4 @@
+import 'package:arosaje_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/services/inscription_service.dart';
 import 'package:crypto/crypto.dart';
@@ -115,8 +116,13 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     hashedPassword,
                     hashedPasswordRepeat,
                   );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+              );
                 },
                 child: Text('S\'inscrire'),
+
               ),
             ],
           ),

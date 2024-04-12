@@ -4,7 +4,7 @@ import 'dart:convert';
 import '../config.dart';
 import '../secure_local_storage_token.dart';
 
-class ConnexionService {
+class UserInformationService {
   final TokenStorage _tokenStorage = TokenStorage();
 
   Future<http.Response> getAuthenticatedData(String email, String mdp) async {

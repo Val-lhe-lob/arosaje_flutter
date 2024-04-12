@@ -1,9 +1,12 @@
 import 'dart:ffi';
+import 'dart:ui';
+import 'package:arosaje_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:arosaje_flutter/services/connexion_service.dart';
 import 'package:arosaje_flutter/services/user_information_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ConnexionPage extends StatefulWidget {
   @override
@@ -60,19 +63,28 @@ class _ConnexionPageState extends State<ConnexionPage> {
                 var bytes = utf8.encode(_passwordController.text);
                   var digest = sha256.convert(bytes); 
                   String hashedPassword = digest.toString();
-                  var _connexion_service = ConnexionService();
-                  var test = _connexion_service.authenticate(
+                  var connexionService = ConnexionService();
+                  var test = connexionService.authenticate(
                     _emailController.text,
                     hashedPassword,
                     
                   );
-                if ( await test ){
-                  var _user_information_service = UserInformationService();
-                  var data = _user_information_service.getAuthenticatedData(_emailController.text);
-                  
-                    
-                  
-                }
+                  if(await test){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()));}
+                  else{
+                    Fluttertoast.showToast(
+                      msg: "La connexion s'est mal passé, veuillez réessayer s'il vous plaît",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
+                  }
+
                 
               },
               child: Text('Se connecter'),
