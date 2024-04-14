@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+
+AppBar header(){
+  
+}
+
 class Header extends StatelessWidget {
   final Function(String) onHeaderLinkTap;
   final VoidCallback? onProfileTap;
