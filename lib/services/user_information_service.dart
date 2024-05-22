@@ -1,24 +1,31 @@
+import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/models/utilisateur_model.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../config.dart';
 import '../secure_local_storage_token.dart';
 
 class UserInformationService {
   final TokenStorage _tokenStorage = TokenStorage();
+  Dio _dio = Dio();
 
-  Future<http.Response> getAuthenticatedData(String email, String mdp) async {
+  Future<Response> getAuthenticatedData(String email, String mdp) async {
     List? token = await _tokenStorage.getToken();
     if (token != null) {
-      return http.get(
-        Uri.parse(Config.apiUrl+'/api/Utilisateurs/name/'+email), // Adjust URL as needed
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token', // Include token in the header
-        },
-      );
+      try {
+        return await _dio.get(
+          Config.apiUrl + '/api/Utilisateurs/name/$email',
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          ),
+        );
+      } catch (e) {
+        throw Exception('Error during authenticated data retrieval: $e');
+      }
     } else {
-      throw Exception('Token not found'); // Handle the case where token is null
+      throw Exception('Token not found');
     }
   }
 }

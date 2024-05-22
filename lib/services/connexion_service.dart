@@ -1,33 +1,36 @@
-import 'package:arosaje_flutter/config.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:arosaje_flutter/config.dart';
 import '../secure_local_storage_token.dart';
 
 class ConnexionService {
   final TokenStorage _tokenStorage = TokenStorage();
+  Dio _dio = Dio();
 
   Future<bool> authenticate(String email, String mdp) async {
-    final response = await http.post(
-      Uri.parse(Config.apiUrl+'/api/Token'),
-      body: jsonEncode({
-        "email": email,
-        "mdp": mdp,
-      }),
-      headers: {'Content-Type': 'application/json'},
-    );
-    if ( response.statusCode != 200 ){
+    try {
+      final response = await _dio.post(
+        Config.apiUrl + '/api/Token',
+        data: {
+          "email": email,
+          "mdp": mdp,
+        },
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final token = json.decode(response.data)['token'];
+        await _tokenStorage.storeToken(token, email); // Store the token
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Exception during authentication: $e');
       return false;
     }
-
-    else if (response.statusCode == 200) {
-      final token = json.decode(response.body)['token'];
-      await _tokenStorage.storeToken(token,email); // Store the token
-      return true;
-    } else {
-      throw Exception('Failed to authenticate');
-
-    }
-    
   }
 
   Future<bool> isLoggedIn() async {
