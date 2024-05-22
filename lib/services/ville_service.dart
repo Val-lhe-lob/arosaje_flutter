@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
-import 'dart:convert';
 import '../config.dart';
 
 class VillesService {

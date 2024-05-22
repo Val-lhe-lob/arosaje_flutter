@@ -1,6 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:arosaje_flutter/models/utilisateur_model.dart';
-import 'dart:convert';
 import '../config.dart';
 import '../secure_local_storage_token.dart';
 

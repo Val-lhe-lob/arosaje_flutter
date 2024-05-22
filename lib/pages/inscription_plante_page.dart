@@ -43,7 +43,7 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GestureDetector(
+          InkWell(
             onTap: _getImage,
             child: _image == null
                 ? Container(

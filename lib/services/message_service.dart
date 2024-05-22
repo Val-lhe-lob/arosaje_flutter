@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/models/message_model.dart';
-import 'dart:convert';
 import '../config.dart';
 
 class MessagesService {

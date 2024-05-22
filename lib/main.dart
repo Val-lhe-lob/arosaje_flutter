@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart'; 
 import 'package:arosaje_flutter/pages/message_page.dart'; 
-import 'header.dart';
+import 'package:arosaje_flutter/header.dart';
 import 'package:arosaje_flutter/pages/connexion_page.dart'; 
 import 'package:arosaje_flutter/pages/inscription_page.dart'; 
 import 'package:arosaje_flutter/pages/inscription_plante_page.dart'; 
@@ -31,33 +31,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Header(
-          onHeaderLinkTap: (String text) {
-            if (text == 'Plantes') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PlantesPage()),
-              );
-            } else if (text == 'Villes') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => VillesPage()),
-              );
-            } else if (text == 'Message') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MessagesPage()),
-              );
-            }
-          },
-          onProfileTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return ProfileDialog();
-              },
-            );
-          },
+        child: CustomHeader(
         ),
       ),
       body: Column(
