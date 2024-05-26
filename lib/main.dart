@@ -45,6 +45,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _showProfileInfo() {
+    bool isLoggedIn = true; // Set to true if the user is logged in
+
+    if (isLoggedIn) {
+      // Show profile information
+      // Replace with your logic
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => ProfileDialog(),
+      );
+    } else {
+      // Show toast with login/signup options
+      // Replace with your logic to show toast
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Veuillez vous connecter ou créer un compte'),
+          action: SnackBarAction(
+            label: 'Se connecter',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConnexionPage()),
+              );
+            },
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: CustomBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showProfileInfo,
+        tooltip: 'Profil et informations',
+        child: Icon(Icons.account_circle),
       ),
     );
   }
