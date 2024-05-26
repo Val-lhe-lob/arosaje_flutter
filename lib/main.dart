@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
-import 'package:arosaje_flutter/pages/ville_page.dart'; 
-import 'package:arosaje_flutter/pages/message_page.dart'; 
-import 'package:arosaje_flutter/header.dart';
-import 'package:arosaje_flutter/pages/connexion_page.dart'; 
-import 'package:arosaje_flutter/pages/inscription_page.dart'; 
-import 'package:arosaje_flutter/pages/inscription_plante_page.dart'; 
+import 'package:arosaje_flutter/pages/ville_page.dart';
+import 'package:arosaje_flutter/pages/message_page.dart';
+import 'package:arosaje_flutter/pages/connexion_page.dart';
+import 'package:arosaje_flutter/pages/inscription_page.dart';
+import 'package:arosaje_flutter/pages/inscription_plante_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mon Application',
+      title: 'Arosaje',
       theme: ThemeData(
         primaryColor: Colors.white,
         fontFamily: 'IndieFlower',
@@ -25,120 +24,206 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final PageController _pageController = PageController();
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: CustomHeader(
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.white, Color(0xFF008B16)],
-              ),
-            ),
-            child: Container(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Arosaje c'est quoi ?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  
-                  Image.asset(
-                    'assets/image/arosaje-accueil-1.jpg',
-                    width: 500,
-                    height: 200,
-                  ),SizedBox(height: 15),Text(
-                    'A Rosa-je c’est une entreprise de conseil et d’entretien botanique qui vous permettra de garder vos plantes avec nos membres de la même ville que vous ! ',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Logique pour voir la carte
-                    },
-                    child: Text('Voir la carte'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(227, 231, 34, 1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          HomeContent(
+            onNavigateToPlantes: () => _onItemTapped(1),
+            onNavigateToInscriptionPlante: () => _onItemTapped(3),
           ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xff7c94b6),
-                image: DecorationImage(
-                  image: AssetImage('assets/image/background-image.jpg'),
-                  fit: BoxFit.cover,
-                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.5), BlendMode.dstATop),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Une plante à faire garder par notre communauté ? Vous voulez garder une plante ?',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 50),
-                  ElevatedButton(
-                    onPressed: () {
-                      // a faire la logique
-                    },
-                    child: Text('Voir les plantes'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(227, 231, 34, 1),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                                {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => InscriptionPlantePage()),
-                        );
-                      };
-                    },
-                    child: Text('Faire garder une plante'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(227, 231, 34, 1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          PlantesPage(),
+          VillesPage(),
+          MessagesPage(),
+          InscriptionPlantePage(),
+        ],
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
+    );
+  }
+}
+class CustomBottomNavigationBar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
+
+  CustomBottomNavigationBar({
+    required this.selectedIndex,
+    required this.onItemTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+            icon: Icon(Icons.home, color: Colors.black),
+            onPressed: () => onItemTapped(0),
+          ),
+          IconButton(
+            icon: Icon(Icons.local_florist, color: Colors.black),
+            onPressed: () => onItemTapped(1),
+          ),
+          IconButton(
+            icon: Icon(Icons.add, color: Colors.black),
+            onPressed: () => onItemTapped(4),
+          ),
+          IconButton(
+            icon: Icon(Icons.map, color: Colors.black),
+            onPressed: () => onItemTapped(2),
+          ),
+          IconButton(
+            icon: Icon(Icons.message, color: Colors.black),
+            onPressed: () => onItemTapped(3),
           ),
         ],
       ),
+    );
+  }
+}
+class HomeContent extends StatelessWidget {
+  final VoidCallback onNavigateToPlantes;
+  final VoidCallback onNavigateToInscriptionPlante;
+
+  HomeContent({
+    required this.onNavigateToPlantes,
+    required this.onNavigateToInscriptionPlante,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Color(0xFF008B16)],
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Arosaje c'est quoi ?",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                Image.asset(
+                  'assets/image/arosaje-accueil-1.jpg',
+                  width: 500,
+                  height: 200,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'A Rosa-je c’est une entreprise de conseil et d’entretien botanique qui vous permettra de garder vos plantes avec nos membres de la même ville que vous ! ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 15),
+                ElevatedButton(
+                  onPressed: () {
+                    // Logique pour voir la carte
+                  },
+                  child: Text('Voir la carte'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                  ),
+                  // Ajoutez d'autres propriétés nécessaires ici si nécessaire
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xff7c94b6),
+              image: DecorationImage(
+                image: AssetImage('assets/image/background-image.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.white.withOpacity(0.5),
+                  BlendMode.dstATop,
+                ),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Une plante à faire garder par notre communauté ? Vous voulez garder une plante ?',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 50),
+                ElevatedButton(
+                  onPressed: onNavigateToPlantes,
+                  child: Text('Voir les plantes'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: onNavigateToInscriptionPlante,
+                  child: Text('Faire garder une plante'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
