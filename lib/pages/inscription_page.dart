@@ -1,8 +1,8 @@
-import 'package:arosaje_flutter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/services/inscription_service.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'package:arosaje_flutter/main.dart';
 
 class InscriptionPage extends StatefulWidget {
   @override
@@ -44,10 +44,30 @@ class _InscriptionPageState extends State<InscriptionPage> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: SingleChildScrollView( // Wrap your Column with SingleChildScrollView
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    Text(
+                      "Inscription",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               TextField(
                 controller: _nomController,
                 decoration: InputDecoration(
@@ -96,13 +116,12 @@ class _InscriptionPageState extends State<InscriptionPage> {
               ElevatedButton(
                 onPressed: () async {
                   var bytes = utf8.encode(_passwordController.text);
-                  var digest = sha256.convert(bytes); 
+                  var digest = sha256.convert(bytes);
                   String hashedPassword = digest.toString();
 
                   var bytesRepeat = utf8.encode(_passwordController.text);
-                  var digestRepeat = sha256.convert(bytesRepeat); 
+                  var digestRepeat = sha256.convert(bytesRepeat);
                   String hashedPasswordRepeat = digestRepeat.toString();
-
 
                   InscriptionService inscriptionService = InscriptionService();
                   await inscriptionService.inscription(
@@ -116,10 +135,9 @@ class _InscriptionPageState extends State<InscriptionPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MyHomePage()),
-              );
+                  );
                 },
                 child: Text('S\'inscrire'),
-
               ),
             ],
           ),

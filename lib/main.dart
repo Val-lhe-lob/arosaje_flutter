@@ -1,3 +1,6 @@
+import 'package:arosaje_flutter/models/utilisateur_model.dart';
+import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/services/user_information_service.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
@@ -34,6 +37,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _selectedIndex = 0;
 
+  String? userName;
+  String? email;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -44,32 +50,56 @@ class _MyHomePageState extends State<MyHomePage> {
       curve: Curves.easeInOut,
     );
   }
-  void _showProfileInfo() {
-    bool isLoggedIn = true; // Set to true if the user is logged in
 
-    if (isLoggedIn) {
-      // Show profile information
-      // Replace with your logic
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => ProfileDialog(),
-      );
+ void _showProfileInfo() async {
+  try {
+    List? tokenData = await TokenStorage().getToken();
+    if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
+      // Utilize the user information service to retrieve profile data
+      Utilisateur? utilisateur =
+          await UserInformationService().getAuthenticatedData(tokenData[1]);
+      if (utilisateur != null) {
+        setState(() {
+          userName = utilisateur.nom;
+          email = utilisateur.email;
+        });
+        // Display the user info dialog
+        ProfileDialog().showUserInfoDialog(context, userName!, email!);
+      } else {
+        print('Error: Utilisateur is null');
+        _showErrorDialog("Error", "Utilisateur is null");
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Veuillez vous connecter ou créer un compte'),
-          action: SnackBarAction(
-            label: 'Se connecter',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ConnexionPage()),
-              );
-            },
-          ),
-        ),
-      );
+      print('Error: Token data is null');
+      // Display the login dialog when token data is null
+      ProfileDialog().showLoginDialog(context);
     }
+  } catch (e) {
+    print('Error fetching profile data: $e');
+    // Handle the error gracefully by displaying the login dialog
+    ProfileDialog().showLoginDialog(context);
+  }
+}
+
+
+  void _showErrorDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -86,13 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
           HomeContent(
             onNavigateToPlantes: () => _onItemTapped(1),
             onNavigateToInscriptionPlante: () => _onItemTapped(2),
-            onNavigateMap: ()=>_onItemTapped(3),
+            onNavigateMap: () => _onItemTapped(3),
           ),
           PlanteOrVillePage(),
           InscriptionPlantePage(),
           VillesPage(),
           MessagesPage(),
-          
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -244,41 +273,86 @@ class HomeContent extends StatelessWidget {
     );
   }
 }
-
 class ProfileDialog extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text("Vous n'êtes pas connecté"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ConnexionPage()),
-              );
-            },
-            child: Text('Se connecter'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(227, 231, 34, 1),
-            ),
+  // Method to display the dialog with user information
+  void showUserInfoDialog(BuildContext context, String userName, String email) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Informations de l'utilisateur"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Nom d'utilisateur: $userName"),
+              SizedBox(height: 8),
+              Text("Email: $email"),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InscriptionPage()),
-              );
-            },
-            child: Text('Créer un compte'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Fermer'),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
+
+  // Method to display the login and signup dialog
+  void showLoginDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Vous n'êtes pas connecté"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ConnexionPage()),
+                  );
+                },
+                child: Text('Se connecter'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => InscriptionPage()),
+                  );
+                },
+                child: Text('Créer un compte'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(227, 231, 34, 1),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // For now, you can leave the build method as it is, you don't need to modify it.
+    return Container();
+  }
 }
+
+  @override
+  Widget build(BuildContext context) {
+    // Pour l'instant, vous pouvez laisser le build comme il est, vous n'avez pas besoin de le modifier.
+    return Container();
+  }

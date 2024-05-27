@@ -1,49 +1,63 @@
 class Plante {
   final int idPlante;
-  final String? espece;
-  final String? description;
-  final String? categorie;
-  final String? etat;
-  final String? nom;
-  final int? lon;
-  final int? lat;
-  final int? idVille;
+  final String espece;
+  final String description;
+  final String categorie;
+  final String etat;
+  final String nom;
+  final int idVille;
+  final String lon;
+  final int lat;
   final int? idPhoto;
-  final int? idUtilisateur;
-  final int? idUtilisateur1;
-  final List<dynamic>? idTips;
+  final int idUtilisateur;
+  final int idUtilisateur1;
 
   Plante({
     required this.idPlante,
-    this.espece,
-    this.description,
-    this.categorie,
-    this.etat,
-    this.nom,
-    this.lon,
-    this.lat,
-    this.idVille,
+    required this.espece,
+    required this.description,
+    required this.categorie,
+    required this.etat,
+    required this.nom,
+    required this.idVille,
+    required this.lon,
+    required this.lat,
     this.idPhoto,
-    this.idUtilisateur,
-    this.idUtilisateur1,
-    this.idTips,
+    required this.idUtilisateur,
+    required this.idUtilisateur1,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {
     return Plante(
-      idPlante: json['idPlante'],
-      espece: json['espece'],
-      description: json['description'],
-      categorie: json['categorie'],
-      etat: json['etat'],
-      nom: json['nom'],
-      lon: json['lon'],
-      lat: json['lat'],
-      idVille: json['idVille'],
-      idPhoto: json['idPhoto'],
-      idUtilisateur: json['idUtilisateur'],
-      idUtilisateur1: json['idUtilisateur1'],
-      idTips: json['idTips'],
+      idPlante: json['Id_Plante'],
+      espece: json['Espece'],
+      description: json['Description'],
+      categorie: json['Categorie'],
+      etat: json['Etat'],
+      nom: json['Nom'],
+      idVille: json['Id_Ville'],
+      lon: json['Lon'],
+      lat: json['Lat'],
+      idPhoto: json['Id_Photo'],
+      idUtilisateur: json['Id_Utilisateur'],
+      idUtilisateur1: json['Id_Utilisateur_1'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Id_Plante': idPlante,
+      'Espece': espece,
+      'Description': description,
+      'Categorie': categorie,
+      'Etat': etat,
+      'Nom': nom,
+      'Id_Ville': idVille,
+      'Lon': lon,
+      'Lat': lat,
+      'Id_Photo': idPhoto,
+      'Id_Utilisateur': idUtilisateur,
+      'Id_Utilisateur_1': idUtilisateur1,
+    };
   }
 }

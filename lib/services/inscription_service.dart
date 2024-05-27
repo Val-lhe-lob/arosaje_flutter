@@ -8,7 +8,7 @@ class InscriptionService {
     try {
       if (mdp == repeatmdp) {
         final response = await _dio.post(
-          Config.apiUrl + 'api/Utilisateurs',
+          Config.apiUrl + '/api/Utilisateurs',
           data: {
             "nom": nom,
             "mdp": mdp,

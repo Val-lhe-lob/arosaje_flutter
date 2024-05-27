@@ -8,7 +8,7 @@ class PlantesService {
   static Future<List<Plante>> getPlantes() async {
     try {
       final response = await _dio.get(
-        Config.apiUrl + "api/Plantes",
+        Config.apiUrl + "/api/Plantes",
       );
 
       if (response.statusCode == 200) {

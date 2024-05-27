@@ -8,7 +8,7 @@ class VillesService {
   static Future<List<Ville>> getVilles() async {
     try {
       var response = await _dio.get(
-        Config.apiUrl + 'api/Villes',
+        Config.apiUrl + '/api/Villes',
         options: Options(
           headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
         ),

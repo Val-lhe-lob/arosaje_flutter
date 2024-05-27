@@ -8,7 +8,7 @@ class MessagesService {
   static Future<List<Message>> getMessages() async {
     try {
       var response = await _dio.get(
-        Config.apiUrl + "api/Messages",
+        Config.apiUrl + "/api/Messages",
       );
 
       if (response.statusCode == 200) {
