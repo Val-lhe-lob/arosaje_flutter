@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
-import 'package:arosaje_flutter/pages/ville_page.dart';
-import 'package:arosaje_flutter/pages/plante_page.dart';
-import 'package:arosaje_flutter/pages/message_page.dart';
-import 'package:arosaje_flutter/pages/connexion_page.dart'; 
-import 'package:arosaje_flutter/pages/inscription_page.dart'; 
-
+import 'package:arosaje_flutter/pages/message_form_page.dart';
 
 class PlanteDetailPage extends StatelessWidget {
   final Plante plante;
@@ -91,7 +86,19 @@ class PlanteDetailPage extends StatelessWidget {
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
-                      // logique a implementer
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: SingleChildScrollView(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.8, // Définir la largeur du conteneur à 80% de la largeur de l'écran
+                                child: MessageForm(),
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: Text(
                       'Envoyer un message\nau propriétaire',

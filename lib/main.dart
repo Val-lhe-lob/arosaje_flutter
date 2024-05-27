@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onNavigateToInscriptionPlante: () => _onItemTapped(2),
             onNavigateMap: ()=>_onItemTapped(3),
           ),
-          PlantesPage(),
+          PlanteOrVillePage(),
           InscriptionPlantePage(),
           VillesPage(),
           MessagesPage(),

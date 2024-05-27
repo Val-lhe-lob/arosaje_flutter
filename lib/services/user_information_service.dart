@@ -6,7 +6,7 @@ class UserInformationService {
   final TokenStorage _tokenStorage = TokenStorage();
   Dio _dio = Dio();
 
-  Future<Response> getAuthenticatedData(String email, String mdp) async {
+  Future<Response> getAuthenticatedData(String? email) async {
     List? token = await _tokenStorage.getToken();
     if (token != null) {
       try {
