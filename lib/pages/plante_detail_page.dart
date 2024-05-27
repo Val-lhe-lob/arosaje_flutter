@@ -3,7 +3,6 @@ import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:arosaje_flutter/pages/message_page.dart';
-import 'package:arosaje_flutter/header.dart';
 import 'package:arosaje_flutter/pages/connexion_page.dart'; 
 import 'package:arosaje_flutter/pages/inscription_page.dart'; 
 
@@ -16,21 +15,27 @@ class PlanteDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: CustomHeader(),
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Détails de la plante",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                Text(
+                  "Détails de la plante",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           Container(

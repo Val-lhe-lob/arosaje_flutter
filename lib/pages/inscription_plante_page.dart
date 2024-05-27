@@ -7,9 +7,6 @@ class InscriptionPlantePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inscription de plante'),
-      ),
       body: InscriptionPlanteForm(),
     );
   }

@@ -44,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
       curve: Curves.easeInOut,
     );
   }
-
   void _showProfileInfo() {
     bool isLoggedIn = true; // Set to true if the user is logged in
 
@@ -56,8 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context) => ProfileDialog(),
       );
     } else {
-      // Show toast with login/signup options
-      // Replace with your logic to show toast
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Veuillez vous connecter ou créer un compte'),
@@ -88,17 +85,42 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           HomeContent(
             onNavigateToPlantes: () => _onItemTapped(1),
-            onNavigateToInscriptionPlante: () => _onItemTapped(3),
+            onNavigateToInscriptionPlante: () => _onItemTapped(2),
+            onNavigateMap: ()=>_onItemTapped(3),
           ),
           PlantesPage(),
+          InscriptionPlantePage(),
           VillesPage(),
           MessagesPage(),
-          InscriptionPlantePage(),
+          
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.black),
+            label: 'Accueil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_florist, color: Colors.black),
+            label: 'Plantes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add, color: Colors.black),
+            label: 'Ajouter Plante',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map, color: Colors.black),
+            label: 'Carte',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.message, color: Colors.black),
+            label: 'Messages',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showProfileInfo,
@@ -108,53 +130,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-class CustomBottomNavigationBar extends StatelessWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onItemTapped;
 
-  CustomBottomNavigationBar({
-    required this.selectedIndex,
-    required this.onItemTapped,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomAppBar(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            icon: Icon(Icons.home, color: Colors.black),
-            onPressed: () => onItemTapped(0),
-          ),
-          IconButton(
-            icon: Icon(Icons.local_florist, color: Colors.black),
-            onPressed: () => onItemTapped(1),
-          ),
-          IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
-            onPressed: () => onItemTapped(4),
-          ),
-          IconButton(
-            icon: Icon(Icons.map, color: Colors.black),
-            onPressed: () => onItemTapped(2),
-          ),
-          IconButton(
-            icon: Icon(Icons.message, color: Colors.black),
-            onPressed: () => onItemTapped(3),
-          ),
-        ],
-      ),
-    );
-  }
-}
 class HomeContent extends StatelessWidget {
   final VoidCallback onNavigateToPlantes;
   final VoidCallback onNavigateToInscriptionPlante;
+  final VoidCallback onNavigateMap;
 
   HomeContent({
     required this.onNavigateToPlantes,
     required this.onNavigateToInscriptionPlante,
+    required this.onNavigateMap,
   });
 
   @override
@@ -200,14 +185,11 @@ class HomeContent extends StatelessWidget {
                 ),
                 SizedBox(height: 15),
                 ElevatedButton(
-                  onPressed: () {
-                    // Logique pour voir la carte
-                  },
+                  onPressed: onNavigateMap,
                   child: Text('Voir la carte'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(227, 231, 34, 1),
                   ),
-                  // Ajoutez d'autres propriétés nécessaires ici si nécessaire
                 ),
               ],
             ),

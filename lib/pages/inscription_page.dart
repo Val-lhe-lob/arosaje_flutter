@@ -42,9 +42,6 @@ class _InscriptionPageState extends State<InscriptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inscription'),
-      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView( // Wrap your Column with SingleChildScrollView

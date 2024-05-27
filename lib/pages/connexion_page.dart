@@ -32,9 +32,6 @@ class _ConnexionPageState extends State<ConnexionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Connexion'),
-      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
