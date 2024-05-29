@@ -1,3 +1,7 @@
+import 'photo_model.dart';
+import 'ville_model.dart';
+import 'membre_model.dart';
+
 class Plante {
   final int idPlante;
   final String espece;
@@ -5,12 +9,12 @@ class Plante {
   final String categorie;
   final String etat;
   final String nom;
-  final int idVille;
+  final Ville ville;
   final String lon;
   final int lat;
-  final int? idPhoto;
-  final int idUtilisateur;
-  final int idUtilisateur1;
+  final Photo? photo;
+  final Membre utilisateur;
+  final Membre utilisateur1;
 
   Plante({
     required this.idPlante,
@@ -19,12 +23,12 @@ class Plante {
     required this.categorie,
     required this.etat,
     required this.nom,
-    required this.idVille,
+    required this.ville,
     required this.lon,
     required this.lat,
-    this.idPhoto,
-    required this.idUtilisateur,
-    required this.idUtilisateur1,
+    this.photo,
+    required this.utilisateur,
+    required this.utilisateur1,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {
@@ -35,12 +39,12 @@ class Plante {
       categorie: json['Categorie'],
       etat: json['Etat'],
       nom: json['Nom'],
-      idVille: json['Id_Ville'],
+      ville: Ville.fromJson(json['Ville']),
       lon: json['Lon'],
       lat: json['Lat'],
-      idPhoto: json['Id_Photo'],
-      idUtilisateur: json['Id_Utilisateur'],
-      idUtilisateur1: json['Id_Utilisateur_1'],
+      photo: json['Photo'] != null ? Photo.fromJson(json['Photo']) : null,
+      utilisateur: Membre.fromJson(json['Utilisateur']),
+      utilisateur1: Membre.fromJson(json['Utilisateur_1']),
     );
   }
 
@@ -52,12 +56,12 @@ class Plante {
       'Categorie': categorie,
       'Etat': etat,
       'Nom': nom,
-      'Id_Ville': idVille,
+      'Ville': ville.toJson(),
       'Lon': lon,
       'Lat': lat,
-      'Id_Photo': idPhoto,
-      'Id_Utilisateur': idUtilisateur,
-      'Id_Utilisateur_1': idUtilisateur1,
+      'Photo': photo?.toJson(),
+      'Utilisateur': utilisateur.toJson(),
+      'Utilisateur_1': utilisateur1.toJson(),
     };
   }
 }

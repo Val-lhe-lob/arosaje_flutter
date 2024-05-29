@@ -1,6 +1,5 @@
-import 'package:arosaje_flutter/models/utilisateur_model.dart';
-import 'package:arosaje_flutter/models/ville_model.dart';
-
+import 'utilisateur_model.dart';
+import 'ville_model.dart';
 
 class Habite {
   final int idUtilisateur;

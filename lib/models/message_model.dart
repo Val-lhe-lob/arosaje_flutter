@@ -1,7 +1,7 @@
 class Message {
   final int idMessage;
   final String contenu;
-  final DateTime dateMessage;
+  final String dateMessage;
 
   Message({
     required this.idMessage,
@@ -12,16 +12,16 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       idMessage: json['Id_Message'],
-      contenu: json['contenu'],
-      dateMessage: DateTime.parse(json['dateMessage']),
+      contenu: json['Contenu'],
+      dateMessage: json['DateMessage'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'Id_Message': idMessage,
-      'contenu': contenu,
-      'dateMessage': dateMessage.toIso8601String(),
+      'Contenu': contenu,
+      'DateMessage': dateMessage,
     };
   }
 }

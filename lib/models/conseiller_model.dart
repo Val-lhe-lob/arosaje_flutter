@@ -1,16 +1,16 @@
-import 'package:arosaje_flutter/models/botaniste_model.dart';
-import 'package:arosaje_flutter/models/tips_model.dart';
+import 'utilisateur_model.dart';
+import 'date_tips_model.dart';
 
 class Conseiller {
   final int idUtilisateur;
   final int idTips;
-  final Botaniste botaniste;
-  final Tips tips;
+  final Utilisateur utilisateur;
+  final DateTips tips;
 
   Conseiller({
     required this.idUtilisateur,
     required this.idTips,
-    required this.botaniste,
+    required this.utilisateur,
     required this.tips,
   });
 
@@ -18,8 +18,8 @@ class Conseiller {
     return Conseiller(
       idUtilisateur: json['Id_Utilisateur'],
       idTips: json['Id_Tips'],
-      botaniste: Botaniste.fromJson(json['Botaniste']),
-      tips: Tips.fromJson(json['Tips']),
+      utilisateur: Utilisateur.fromJson(json['Utilisateur']),
+      tips: DateTips.fromJson(json['Tips']),
     );
   }
 
@@ -27,7 +27,7 @@ class Conseiller {
     return {
       'Id_Utilisateur': idUtilisateur,
       'Id_Tips': idTips,
-      'Botaniste': botaniste.toJson(),
+      'Utilisateur': utilisateur.toJson(),
       'Tips': tips.toJson(),
     };
   }

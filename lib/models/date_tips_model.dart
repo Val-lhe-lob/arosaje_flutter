@@ -10,14 +10,14 @@ class DateTips {
   factory DateTips.fromJson(Map<String, dynamic> json) {
     return DateTips(
       idTips: json['Id_Tips'],
-      contenu: json['contenu'],
+      contenu: json['Contenu'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'Id_Tips': idTips,
-      'contenu': contenu,
+      'Contenu': contenu,
     };
   }
 }

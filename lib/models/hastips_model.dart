@@ -1,11 +1,11 @@
-import 'package:arosaje_flutter/models/plante_model.dart';
-import 'package:arosaje_flutter/models/tips_model.dart';
+import 'plante_model.dart';
+import 'date_tips_model.dart';
 
 class HasTips {
   final int idPlante;
   final int idTips;
   final Plante plante;
-  final Tips tips;
+  final DateTips tips;
 
   HasTips({
     required this.idPlante,
@@ -19,7 +19,7 @@ class HasTips {
       idPlante: json['Id_Plante'],
       idTips: json['Id_Tips'],
       plante: Plante.fromJson(json['Plante']),
-      tips: Tips.fromJson(json['Tips']),
+      tips: DateTips.fromJson(json['Tips']),
     );
   }
 

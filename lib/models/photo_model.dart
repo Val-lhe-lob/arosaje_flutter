@@ -10,14 +10,14 @@ class Photo {
   factory Photo.fromJson(Map<String, dynamic> json) {
     return Photo(
       idPhoto: json['Id_Photo'],
-      image: json['image'],
+      image: json['Image'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'Id_Photo': idPhoto,
-      'image': image,
+      'Image': image,
     };
   }
 }

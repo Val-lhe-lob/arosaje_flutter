@@ -1,4 +1,4 @@
-import 'package:arosaje_flutter/models/utilisateur_model.dart';
+import 'utilisateur_model.dart';
 
 class Botaniste {
   final int idUtilisateur;
