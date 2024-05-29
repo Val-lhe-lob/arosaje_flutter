@@ -1,6 +1,6 @@
-import 'photo_model.dart';
-import 'ville_model.dart';
-import 'membre_model.dart';
+import 'package:arosaje_flutter/models/photo_model.dart';
+import 'package:arosaje_flutter/models/utilisateur_model.dart';
+import 'package:arosaje_flutter/models/ville_model.dart';
 
 class Plante {
   final int idPlante;
@@ -11,10 +11,10 @@ class Plante {
   final String nom;
   final Ville ville;
   final String lon;
-  final int lat;
-  final Photo? photo;
-  final Membre utilisateur;
-  final Membre utilisateur1;
+  final int? lat; // Déclarez lat comme un int nullable
+  final Photo photo;
+  final Utilisateur? utilisateur;
+  final Utilisateur? utilisateur1;
 
   Plante({
     required this.idPlante,
@@ -26,9 +26,9 @@ class Plante {
     required this.ville,
     required this.lon,
     required this.lat,
-    this.photo,
-    required this.utilisateur,
-    required this.utilisateur1,
+    required this.photo,
+    this.utilisateur,
+    this.utilisateur1,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {
@@ -41,10 +41,10 @@ class Plante {
       nom: json['Nom'],
       ville: Ville.fromJson(json['Ville']),
       lon: json['Lon'],
-      lat: json['Lat'],
-      photo: json['Photo'] != null ? Photo.fromJson(json['Photo']) : null,
-      utilisateur: Membre.fromJson(json['Utilisateur']),
-      utilisateur1: Membre.fromJson(json['Utilisateur_1']),
+      lat: json['Lat'] != null ? json['Lat'] as int : null,
+      photo: json['Photo'],
+      utilisateur: Utilisateur.fromJson(json['Utilisateur']),
+      utilisateur1: Utilisateur.fromJson(json['Utilisateur_1']),
     );
   }
 
@@ -59,9 +59,9 @@ class Plante {
       'Ville': ville.toJson(),
       'Lon': lon,
       'Lat': lat,
-      'Photo': photo?.toJson(),
-      'Utilisateur': utilisateur.toJson(),
-      'Utilisateur_1': utilisateur1.toJson(),
+      'Photo': photo.toJson(),
+      'Utilisateur': utilisateur?.toJson(),
+      'Utilisateur_1': utilisateur1?.toJson(),
     };
   }
 }

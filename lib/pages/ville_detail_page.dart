@@ -72,7 +72,7 @@ class VilleDetailPage extends StatelessWidget {
                     child: ListView.builder(
                       itemCount: ville.plantes!.length,
                       itemBuilder: (context, index) {
-                        final plante = ville.plantes![index];
+                        final plante = ville.plantes[index];
                         return ListTile(
                           title: Text(plante.nom),
                           subtitle: Text(plante.description ?? ''),

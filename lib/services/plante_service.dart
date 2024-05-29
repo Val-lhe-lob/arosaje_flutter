@@ -13,6 +13,7 @@ class PlantesService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
+        print('Data JSON: $data'); // Afficher les données JSON
         return data.map((json) => Plante.fromJson(json)).toList();
       } else {
         throw Exception('Échec de chargement des données: ${response.statusCode}');

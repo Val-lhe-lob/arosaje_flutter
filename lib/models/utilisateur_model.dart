@@ -1,12 +1,14 @@
-
-
 class Utilisateur {
   final int idUtilisateur;
   final String nom;
   final String mdp;
   final String email;
   final String prenom;
-  final String age;
+  final int age;
+  final dynamic botaniste;
+  final dynamic membre;
+  final dynamic proprio;
+  final List<dynamic> idVilles;
 
   Utilisateur({
     required this.idUtilisateur,
@@ -15,27 +17,39 @@ class Utilisateur {
     required this.email,
     required this.prenom,
     required this.age,
+    this.botaniste,
+    this.membre,
+    this.proprio,
+    required this.idVilles,
   });
 
   factory Utilisateur.fromJson(Map<String, dynamic> json) {
     return Utilisateur(
-      idUtilisateur: json['Id_Utilisateur'],
-      nom: json['Nom'],
-      mdp: json['Mdp'],
-      email: json['Email'],
-      prenom: json['Prenom'],
-      age: json['Age'],
+      idUtilisateur: json['idUtilisateur'],
+      nom: json['nom'],
+      mdp: json['mdp'],
+      email: json['email'],
+      prenom: json['prenom'],
+      age: json['age'], // Ensure this is an int
+      botaniste: json['botaniste'],
+      membre: json['membre'],
+      proprio: json['proprio'],
+      idVilles: List<dynamic>.from(json['idVilles']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'Id_Utilisateur': idUtilisateur,
-      'Nom': nom,
-      'Mdp': mdp,
-      'Email': email,
-      'Prenom': prenom,
-      'Age': age,
+      'idUtilisateur': idUtilisateur,
+      'nom': nom,
+      'mdp': mdp,
+      'email': email,
+      'prenom': prenom,
+      'age': age,
+      'botaniste': botaniste,
+      'membre': membre,
+      'proprio': proprio,
+      'idVilles': idVilles,
     };
   }
 }

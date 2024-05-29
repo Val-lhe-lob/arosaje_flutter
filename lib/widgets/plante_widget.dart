@@ -32,11 +32,11 @@ class PlantesListWidget extends StatelessWidget {
                   trailing: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlanteDetailPage(plante: plante),
-                          ),
-                        );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PlanteDetailPage(plante: plante),
+                        ),
+                      );
                     },
                     child: Text('Détail'),
                   ),

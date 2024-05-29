@@ -1,5 +1,6 @@
 import 'package:arosaje_flutter/models/utilisateur_model.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/services/deconnexion_service.dart';
 import 'package:arosaje_flutter/services/user_information_service.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
@@ -51,19 +52,21 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
- void _showProfileInfo() async {
+void _showProfileInfo() async {
   try {
     List? tokenData = await TokenStorage().getToken();
+    print('Token data: $tokenData'); // Debug token data
+
     if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
-      // Utilize the user information service to retrieve profile data
-      Utilisateur? utilisateur =
-          await UserInformationService().getAuthenticatedData(tokenData[1]);
+      Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
+      print('Fetched utilisateur: $utilisateur'); // Debug fetched user
+
       if (utilisateur != null) {
         setState(() {
           userName = utilisateur.nom;
           email = utilisateur.email;
         });
-        // Display the user info dialog
+        print('User Name: $userName, Email: $email'); // Debug userName and email
         ProfileDialog().showUserInfoDialog(context, userName!, email!);
       } else {
         print('Error: Utilisateur is null');
@@ -71,16 +74,13 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     } else {
       print('Error: Token data is null');
-      // Display the login dialog when token data is null
       ProfileDialog().showLoginDialog(context);
     }
   } catch (e) {
     print('Error fetching profile data: $e');
-    // Handle the error gracefully by displaying the login dialog
     ProfileDialog().showLoginDialog(context);
   }
 }
-
 
   void _showErrorDialog(String title, String content) {
     showDialog(
@@ -274,7 +274,6 @@ class HomeContent extends StatelessWidget {
   }
 }
 class ProfileDialog extends StatelessWidget {
-  // Method to display the dialog with user information
   void showUserInfoDialog(BuildContext context, String userName, String email) {
     showDialog(
       context: context,
@@ -296,6 +295,13 @@ class ProfileDialog extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               child: Text('Fermer'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await DeconnexionService().deconnexion();
+                Navigator.of(context).pop();
+              },
+              child: Text('Déconnexion'),
             ),
           ],
         );
