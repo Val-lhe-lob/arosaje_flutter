@@ -9,12 +9,12 @@ class Plante {
   final String categorie;
   final String etat;
   final String nom;
-  final Ville ville;
-  final String lon;
-  final int? lat; // Déclarez lat comme un int nullable
-  final Photo photo;
-  final Utilisateur? utilisateur;
-  final Utilisateur? utilisateur1;
+  final Ville? ville; // Peut être null
+  final String? lon; // Déclarez lon comme String nullable
+  final String? lat; // Déclarez lat comme String nullable
+  final Photo? photo; // Peut être null
+  final Utilisateur? utilisateur; // Peut être null
+  final Utilisateur? utilisateur1; // Peut être null
 
   Plante({
     required this.idPlante,
@@ -23,45 +23,45 @@ class Plante {
     required this.categorie,
     required this.etat,
     required this.nom,
-    required this.ville,
-    required this.lon,
-    required this.lat,
-    required this.photo,
+    this.ville,
+    this.lon,
+    this.lat,
+    this.photo,
     this.utilisateur,
     this.utilisateur1,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {
     return Plante(
-      idPlante: json['Id_Plante'],
-      espece: json['Espece'],
-      description: json['Description'],
-      categorie: json['Categorie'],
-      etat: json['Etat'],
-      nom: json['Nom'],
-      ville: Ville.fromJson(json['Ville']),
-      lon: json['Lon'],
-      lat: json['Lat'] != null ? json['Lat'] as int : null,
-      photo: json['Photo'],
-      utilisateur: Utilisateur.fromJson(json['Utilisateur']),
-      utilisateur1: Utilisateur.fromJson(json['Utilisateur_1']),
+      idPlante: json['idPlante'],
+      espece: json['espece'],
+      description: json['description'],
+      categorie: json['categorie'],
+      etat: json['etat'],
+      nom: json['nom'],
+      ville: json['idVilleNavigation'] != null ? Ville.fromJson(json['idVilleNavigation']) : null,
+      lon: json['lon'] != null ? json['lon'] as String : null,
+      lat: json['lat'] != null ? json['lat'] as String : null,
+      photo: json['idPhotoNavigation'] != null ? Photo.fromJson(json['idPhotoNavigation']) : null,
+      utilisateur: json['idUtilisateurNavigation'] != null ? Utilisateur.fromJson(json['idUtilisateurNavigation']) : null,
+      utilisateur1: json['idUtilisateur1Navigation'] != null ? Utilisateur.fromJson(json['idUtilisateur1Navigation']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'Id_Plante': idPlante,
-      'Espece': espece,
-      'Description': description,
-      'Categorie': categorie,
-      'Etat': etat,
-      'Nom': nom,
-      'Ville': ville.toJson(),
-      'Lon': lon,
-      'Lat': lat,
-      'Photo': photo.toJson(),
-      'Utilisateur': utilisateur?.toJson(),
-      'Utilisateur_1': utilisateur1?.toJson(),
+      'idPlante': idPlante,
+      'espece': espece,
+      'description': description,
+      'categorie': categorie,
+      'etat': etat,
+      'nom': nom,
+      'idVilleNavigation': ville?.toJson(),
+      'lon': lon,
+      'lat': lat,
+      'idPhotoNavigation': photo?.toJson(),
+      'idUtilisateurNavigation': utilisateur?.toJson(),
+      'idUtilisateur1Navigation': utilisateur1?.toJson(),
     };
   }
 }
