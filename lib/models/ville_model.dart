@@ -4,7 +4,7 @@ class Ville {
   final int idVille;
   final String nom;
   final String desc;
-  final List<Plante> plantes;
+  List<Plante> plantes; // Modifier pour ne pas le rendre final
 
   Ville({
     required this.idVille,
@@ -14,13 +14,13 @@ class Ville {
   });
 
   factory Ville.fromJson(Map<String, dynamic> json) {
-    List<dynamic> plantesJson = json['plantes'] ?? [];
+    List<dynamic> plantesJson = json['plantes']; // Assurez-vous que la clé est en minuscules
     List<Plante> plantesList = plantesJson.map((planteJson) => Plante.fromJson(planteJson)).toList();
 
     return Ville(
-      idVille: json['idVille'],
-      nom: json['nom'],
-      desc: json['desc'],
+      idVille: json['idVille'], // Assurez-vous que la clé est en minuscules
+      nom: json['nom'], // Assurez-vous que la clé est en minuscules
+      desc: json['desc'], // Assurez-vous que la clé est en minuscules
       plantes: plantesList,
     );
   }
@@ -34,3 +34,4 @@ class Ville {
     };
   }
 }
+

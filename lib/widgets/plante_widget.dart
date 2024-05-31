@@ -13,8 +13,11 @@ class PlantesListWidget extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text(snapshot.error.toString()));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Aucune donnée disponible'));
         } else {
           final plantes = snapshot.data!;
+          print('Plantes: $plantes'); // Vérifier les données des plantes
           return ListView.builder(
             itemCount: plantes.length,
             itemBuilder: (context, index) {
@@ -23,11 +26,11 @@ class PlantesListWidget extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 padding: EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(229,255,123,1),
+                  color: const Color.fromRGBO(229, 255, 123, 1),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: ListTile(
-                  title: Text(plante.nom ?? ''),
+                  title: Text(plante.nom),
                   subtitle: Text(plante.description ?? ''),
                   trailing: ElevatedButton(
                     onPressed: () {

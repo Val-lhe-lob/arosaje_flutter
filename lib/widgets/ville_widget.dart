@@ -7,7 +7,7 @@ class VillesListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Ville>>(
-      future: VillesService.getVilles(),
+      future: VillesService.getVillesWithPlantes(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());

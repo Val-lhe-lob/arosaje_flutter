@@ -7,13 +7,16 @@ class PlantesService {
 
   static Future<List<Plante>> getPlantes() async {
     try {
-      final response = await _dio.get(
-        Config.apiUrl + "/api/Plantes",
+      var response = await _dio.get(
+        Config.apiUrl + '/api/Plantes',
+        options: Options(
+          headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+        ),
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        print('Data JSON: $data'); // Afficher les données JSON
+        print('Plantes Data JSON: $data'); // Afficher les données JSON
         return data.map((json) => Plante.fromJson(json)).toList();
       } else {
         throw Exception('Échec de chargement des données: ${response.statusCode}');
