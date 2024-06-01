@@ -1,27 +1,26 @@
-import 'plante_model.dart'; // Import the Plante model
+import 'package:arosaje_flutter/models/plante_model.dart';
 
 class Ville {
   final int idVille;
   final String nom;
   final String desc;
-  List<Plante> plantes; // Modifier pour ne pas le rendre final
+  List<Plante>? plantes; // Plantes associées à la ville
 
   Ville({
     required this.idVille,
     required this.nom,
     required this.desc,
-    required this.plantes,
+    this.plantes,
   });
 
   factory Ville.fromJson(Map<String, dynamic> json) {
-    List<dynamic> plantesJson = json['plantes']; // Assurez-vous que la clé est en minuscules
-    List<Plante> plantesList = plantesJson.map((planteJson) => Plante.fromJson(planteJson)).toList();
-
     return Ville(
-      idVille: json['idVille'], // Assurez-vous que la clé est en minuscules
-      nom: json['nom'], // Assurez-vous que la clé est en minuscules
-      desc: json['desc'], // Assurez-vous que la clé est en minuscules
-      plantes: plantesList,
+      idVille: json['idVille'],
+      nom: json['nom'],
+      desc: json['desc'],
+      plantes: json['plantes'] != null
+          ? (json['plantes'] as List).map((i) => Plante.fromJson(i)).toList()
+          : [],
     );
   }
 
@@ -30,8 +29,7 @@ class Ville {
       'idVille': idVille,
       'nom': nom,
       'desc': desc,
-      'plantes': plantes.map((plante) => plante.toJson()).toList(),
+      'plantes': plantes?.map((e) => e.toJson()).toList(),
     };
   }
 }
-

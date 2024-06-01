@@ -1,63 +1,63 @@
 class Plante {
   final int idPlante;
   final String espece;
-  final String? description;
+  final String description;
   final String categorie;
   final String etat;
   final String nom;
+  final int idVille;
   final String lon;
   final String lat;
-  final int idVille;
-  final int idPhoto;
+  final int? idPhoto;
   final int idUtilisateur;
   final int idUtilisateur1;
 
   Plante({
     required this.idPlante,
     required this.espece,
-    this.description,
+    required this.description,
     required this.categorie,
     required this.etat,
     required this.nom,
+    required this.idVille,
     required this.lon,
     required this.lat,
-    required this.idVille,
-    required this.idPhoto,
+    this.idPhoto,
     required this.idUtilisateur,
     required this.idUtilisateur1,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {
     return Plante(
-      idPlante: json['Id_Plante'] ?? 0,
-      espece: json['Espece'] ?? '',
-      description: json['Description'],
-      categorie: json['Categorie'] ?? '',
-      etat: json['Etat'] ?? '',
-      nom: json['Nom'] ?? '',
-      lon: json['Lon'] ?? '',
-      lat: json['Lat'] ?? '',
-      idVille: json['Id_Ville'] ?? 0,
-      idPhoto: json['Id_Photo'] ?? 0,
-      idUtilisateur: json['Id_Utilisateur'] ?? 0,
-      idUtilisateur1: json['Id_Utilisateur1'] ?? 0,
+      idPlante: json['idPlante'],
+      espece: json['espece'],
+      description: json['description'],
+      categorie: json['categorie'],
+      etat: json['etat'],
+      nom: json['nom'],
+      idVille: json['idVille'],
+      lon: json['lon'],
+      lat: json['lat'],
+      idPhoto: json['idPhoto'],
+      idUtilisateur: json['idUtilisateur'],
+      idUtilisateur1: json['idUtilisateur1'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'Id_Plante': idPlante,
-      'Espece': espece,
-      'Description': description,
-      'Categorie': categorie,
-      'Etat': etat,
-      'Nom': nom,
-      'Lon': lon,
-      'Lat': lat,
-      'Id_Ville': idVille,
-      'Id_Photo': idPhoto,
-      'Id_Utilisateur': idUtilisateur,
-      'Id_Utilisateur1': idUtilisateur1,
+      'idPlante': idPlante,
+      'espece': espece,
+      'description': description,
+      'categorie': categorie,
+      'etat': etat,
+      'nom': nom,
+      'idVille': idVille,
+      'lon': lon,
+      'lat': lat,
+      'idPhoto': idPhoto,
+      'idUtilisateur': idUtilisateur,
+      'idUtilisateur1': idUtilisateur1,
     };
   }
 }

@@ -1,4 +1,5 @@
 import 'package:arosaje_flutter/models/utilisateur_model.dart';
+import 'package:arosaje_flutter/pages/plantes_inscrites_page.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:arosaje_flutter/services/deconnexion_service.dart';
 import 'package:arosaje_flutter/services/user_information_service.dart';
@@ -52,35 +53,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-void _showProfileInfo() async {
-  try {
-    List? tokenData = await TokenStorage().getToken();
-    print('Token data: $tokenData'); // Debug token data
+  void _showProfileInfo() async {
+    try {
+      List? tokenData = await TokenStorage().getToken();
+      print('Token data: $tokenData'); // Debug token data
 
-    if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
-      Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
-      print('Fetched utilisateur: $utilisateur'); // Debug fetched user
+      if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
+        Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
+        await TokenStorage().storeId(utilisateur!.idUtilisateur);
+        print('Fetched utilisateur: $utilisateur'); // Debug fetched user
 
-      if (utilisateur != null) {
-        setState(() {
-          userName = utilisateur.nom;
-          email = utilisateur.email;
-        });
-        print('User Name: $userName, Email: $email'); // Debug userName and email
-        ProfileDialog().showUserInfoDialog(context, userName!, email!);
+        if (utilisateur != null) {
+          setState(() {
+            userName = utilisateur.nom;
+            email = utilisateur.email;
+          });
+          print('User Name: $userName, Email: $email'); // Debug userName and email
+          ProfileDialog().showUserInfoDialog(context, userName!, email!);
+        } else {
+          print('Error: Utilisateur is null');
+          _showErrorDialog("Error", "Utilisateur is null");
+        }
       } else {
-        print('Error: Utilisateur is null');
-        _showErrorDialog("Error", "Utilisateur is null");
+        print('Error: Token data is null');
+        ProfileDialog().showLoginDialog(context);
       }
-    } else {
-      print('Error: Token data is null');
+    } catch (e) {
+      print('Error fetching profile data: $e');
       ProfileDialog().showLoginDialog(context);
     }
-  } catch (e) {
-    print('Error fetching profile data: $e');
-    ProfileDialog().showLoginDialog(context);
   }
-}
 
   void _showErrorDialog(String title, String content) {
     showDialog(
@@ -102,6 +104,13 @@ void _showProfileInfo() async {
     );
   }
 
+  void _navigateToPlantesUtilisateur() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PlantesUtilisateurPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +126,7 @@ void _showProfileInfo() async {
             onNavigateToPlantes: () => _onItemTapped(1),
             onNavigateToInscriptionPlante: () => _onItemTapped(2),
             onNavigateMap: () => _onItemTapped(3),
+            onNavigateToPlantesUtilisateur: _navigateToPlantesUtilisateur,
           ),
           PlanteOrVillePage(),
           InscriptionPlantePage(),
@@ -164,11 +174,13 @@ class HomeContent extends StatelessWidget {
   final VoidCallback onNavigateToPlantes;
   final VoidCallback onNavigateToInscriptionPlante;
   final VoidCallback onNavigateMap;
+  final VoidCallback onNavigateToPlantesUtilisateur;
 
   HomeContent({
     required this.onNavigateToPlantes,
     required this.onNavigateToInscriptionPlante,
     required this.onNavigateMap,
+    required this.onNavigateToPlantesUtilisateur,
   });
 
   @override
@@ -273,6 +285,7 @@ class HomeContent extends StatelessWidget {
     );
   }
 }
+
 class ProfileDialog extends StatelessWidget {
   void showUserInfoDialog(BuildContext context, String userName, String email) {
     showDialog(
@@ -293,6 +306,16 @@ class ProfileDialog extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PlantesUtilisateurPage()),
+                );
+              },
+              child: Text('Voir mes plantes inscrites'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
               },
               child: Text('Fermer'),
             ),
@@ -309,7 +332,6 @@ class ProfileDialog extends StatelessWidget {
     );
   }
 
-  // Method to display the login and signup dialog
   void showLoginDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -352,13 +374,6 @@ class ProfileDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // For now, you can leave the build method as it is, you don't need to modify it.
     return Container();
   }
 }
-
-  @override
-  Widget build(BuildContext context) {
-    // Pour l'instant, vous pouvez laisser le build comme il est, vous n'avez pas besoin de le modifier.
-    return Container();
-  }

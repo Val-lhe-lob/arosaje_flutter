@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
 import 'package:arosaje_flutter/services/ville_service.dart';
+import 'package:arosaje_flutter/pages/plante_detail_page.dart';
 
 class VilleDetailPage extends StatelessWidget {
   final Ville ville;
@@ -80,12 +81,31 @@ class VilleDetailPage extends StatelessWidget {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: villeWithPlantes.plantes.length,
+                            itemCount: villeWithPlantes.plantes?.length ?? 0,
                             itemBuilder: (context, index) {
-                              final plante = villeWithPlantes.plantes[index];
-                              return ListTile(
-                                title: Text(plante.nom),
-                                subtitle: Text(plante.description ?? ''),
+                              final plante = villeWithPlantes.plantes![index];
+                              return Container(
+                                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                padding: EdgeInsets.all(16.0),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFFF6347), // Rouge coquelicot
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: ListTile(
+                                  title: Text(plante.nom),
+                                  subtitle: Text(plante.description ?? ''),
+                                  trailing: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PlanteDetailPage(plante: plante),
+                                        ),
+                                      );
+                                    },
+                                    child: Text('Détail'),
+                                  ),
+                                ),
                               );
                             },
                           ),
