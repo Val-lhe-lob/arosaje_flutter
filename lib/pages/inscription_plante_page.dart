@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:arosaje_flutter/services/inscription_plante_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 
 class InscriptionPlantePage extends StatelessWidget {
   @override
@@ -22,6 +24,8 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
   final TextEditingController _speciesController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   File? _image;
+  String? _base64Image;
+  String? _imageExtension;
 
   Future<void> _getImage() async {
     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -29,8 +33,35 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+
+        // Get the file extension
+        _imageExtension = path.extension(pickedFile.path);
+
+        // Read the file and encode it in base64
+        _image!.readAsBytes().then((imageBytes) {
+          setState(() {
+            _base64Image = base64Encode(imageBytes);
+          });
+        }).catchError((error) {
+          // Handle error in reading file
+          print('Error reading image file: $error');
+        });
       });
     }
+  }
+
+  Future<void> _registerPlant() async {
+    if (_base64Image == null || _imageExtension == null) {
+      throw Exception('Image is required');
+    }
+
+    await InscriptionPlanteService.registerPlant(
+      _nameController.text,
+      _speciesController.text,
+      _descriptionController.text,
+      _base64Image,
+      _imageExtension,
+    );
   }
 
   @override
@@ -68,11 +99,7 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
           ),
           SizedBox(height: 16.0),
           ElevatedButton(
-            onPressed: () {
-              // À implémenter : logique d'enregistrement de la plante
-              // Vous pouvez accéder aux valeurs des champs avec _nameController.text, _speciesController.text, _descriptionController.text
-              // Et l'image avec _image
-            },
+            onPressed: _registerPlant,
             child: Text('Enregistrer'),
           ),
         ],
