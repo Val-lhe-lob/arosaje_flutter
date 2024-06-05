@@ -6,7 +6,7 @@ import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:http/http.dart' as http;
 
 class InscriptionPlanteService {
-  static Future<void> registerPlant(String name, String species, String description, String? base64Image, String? imageExtension) async {
+  static Future<void> registerPlant(String name, String species, String description, String? base64Image, String? imageExtension, int cityId) async {
     List? tokenData = await TokenStorage().getToken();
     int? userId = tokenData?[2];
     String? token = tokenData?[0];
@@ -46,6 +46,7 @@ class InscriptionPlanteService {
       'description': description,
       'idUtilisateur': userId,
       'idPhoto': photoId,
+      'idVille': cityId,
     };
 
     final response = await http.post(
@@ -60,5 +61,25 @@ class InscriptionPlanteService {
     if (response.statusCode != 200) {
       throw Exception('Failed to register plant');
     }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchCities() async {
+    final response = await http.get(
+      Uri.parse('${Config.apiUrl}/api/villes'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load cities');
+    }
+
+    List<dynamic> body = jsonDecode(response.body);
+    List<Map<String, dynamic>> cities = body.map((dynamic item) => {
+          'id': item['id'],
+          'name': item['name'],
+        }).toList();
+    return cities;
   }
 }

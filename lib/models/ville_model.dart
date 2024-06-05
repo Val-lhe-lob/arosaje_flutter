@@ -15,9 +15,9 @@ class Ville {
 
   factory Ville.fromJson(Map<String, dynamic> json) {
     return Ville(
-      idVille: json['idVille'],
-      nom: json['nom'],
-      desc: json['desc'],
+      idVille: json['idVille'] ?? 0,
+      nom: json['nom'] ?? '',
+      desc: json['desc'] ?? '',
       plantes: json['plantes'] != null
           ? (json['plantes'] as List).map((i) => Plante.fromJson(i)).toList()
           : [],
