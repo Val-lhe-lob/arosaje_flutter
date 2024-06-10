@@ -20,14 +20,13 @@ class PhotoService {
   }
 
   Future<Photo> fetchLatestPhoto() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/photos/latest'));
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> body = jsonDecode(response.body);
-      Photo latestPhoto = Photo.fromJson(body);
-      return latestPhoto;
+    List<Photo> photos = await fetchPhotos();
+    
+    // Assuming that the photos list is ordered by date, latest first.
+    if (photos.isNotEmpty) {
+      return photos.last; // Return the latest photo
     } else {
-      throw Exception('Failed to load latest photo');
+      throw Exception('No photos found');
     }
   }
 }

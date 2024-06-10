@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
 import 'package:arosaje_flutter/services/inscription_plante_service.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:path/path.dart' as path;
+import 'package:flutter/foundation.dart';
 
 class InscriptionPlantePage extends StatelessWidget {
   @override
@@ -24,7 +24,6 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _speciesController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  File? _image;
   String? _base64Image;
   String? _imageExtension;
   List<Ville> _villes = [];
@@ -38,9 +37,9 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
 
   Future<void> _loadCities() async {
     try {
-      List<Map<String, dynamic>> cities = await InscriptionPlanteService.fetchCities();
+      List<Ville> cities = await InscriptionPlanteService.fetchCities();
       setState(() {
-        _villes = cities.cast<Ville>();
+        _villes = cities;
         print("Cities loaded: ${_villes.map((city) => city.nom).toList()}");
       });
     } catch (e) {
@@ -49,41 +48,40 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
   }
 
   Future<void> _getImage() async {
-    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+      );
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-
-        // Get the file extension
-        _imageExtension = path.extension(pickedFile.path);
-
-        // Read the file and encode it in base64
-        _image!.readAsBytes().then((imageBytes) {
-          setState(() {
-            _base64Image = base64Encode(imageBytes);
-          });
-        }).catchError((error) {
-          // Handle error in reading file
-          print('Error reading image file: $error');
+      if (result != null && result.files.single.bytes != null) {
+        setState(() {
+          _base64Image = base64Encode(result.files.single.bytes!);
+          _imageExtension = result.files.single.extension;
         });
-      });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
     }
   }
 
   Future<void> _registerPlant() async {
-    if (_base64Image == null || _imageExtension == null || _selectedCityId == null) {
-      throw Exception('All fields are required');
-    }
+    try {
+      if (_base64Image == null || _imageExtension == null || _selectedCityId == null) {
+        throw Exception('All fields are required');
+      }
 
-    await InscriptionPlanteService.registerPlant(
-      _nameController.text,
-      _speciesController.text,
-      _descriptionController.text,
-      _base64Image,
-      _imageExtension,
-      _selectedCityId!,
-    );
+      await InscriptionPlanteService.registerPlant(
+        _nameController.text,
+        _speciesController.text,
+        _descriptionController.text,
+        _base64Image,
+        _imageExtension,
+        _selectedCityId!,
+      );
+      print('Plant registered successfully');
+    } catch (e) {
+      print('Error registering plant: $e');
+    }
   }
 
   @override
@@ -95,13 +93,13 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
         children: [
           InkWell(
             onTap: _getImage,
-            child: _image == null
+            child: _base64Image == null
                 ? Container(
                     color: Colors.grey,
                     height: 150,
                     child: Icon(Icons.add_a_photo, size: 50, color: Colors.white),
                   )
-                : Image.file(_image!, height: 150, fit: BoxFit.cover),
+                : Image.memory(base64Decode(_base64Image!), height: 150, fit: BoxFit.cover),
           ),
           SizedBox(height: 16.0),
           TextFormField(

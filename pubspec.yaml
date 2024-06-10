@@ -45,6 +45,8 @@ dependencies:
   flutter_secure_storage: ^5.0.2
   fluttertoast: ^8.0.8
   path: ^1.9.0
+  file_picker: ^8.0.3
+  universal_io: ^2.2.2
 
 
 dev_dependencies:
