@@ -14,6 +14,7 @@ class InscriptionPlanteService {
     String? userIdString = tokenData?[2];
     int? userId = userIdString != null ? int.parse(userIdString) : null;
 
+
     print('Token: $token'); // Ligne de débogage
     print('Email: $email'); // Ligne de débogage
     print('User ID: $userId'); // Ligne de débogage
@@ -22,17 +23,12 @@ class InscriptionPlanteService {
       throw Exception('User not logged in');
     }
 
-    if (cityId == null) {
-      throw Exception('City ID is required');
-    }
-
+    
     // Étape 1: Enregistrer l'image
     Map<String, dynamic> imageData = {
       'image': base64Image,
       'extension': imageExtension,
     };
-
-    print('Sending image data: $imageData'); // Ligne de débogage
 
     final responsePhoto = await http.post(
       Uri.parse('${Config.apiUrl}/api/photos'), // Assurez-vous que cette URL est correcte
@@ -43,9 +39,6 @@ class InscriptionPlanteService {
       body: jsonEncode(imageData),
     );
 
-    print('Photo upload response: ${responsePhoto.statusCode}'); // Ligne de débogage
-    print('Photo upload response body: ${responsePhoto.body}'); // Ligne de débogage
-
     if (responsePhoto.statusCode != 201) {
       throw Exception('Failed to register photo');
     }
@@ -53,7 +46,11 @@ class InscriptionPlanteService {
     // Étape 2: Récupérer l'ID de la dernière photo
     final photoService = PhotoService(baseUrl: Config.apiUrl);
     final latestPhoto = await photoService.fetchLatestPhoto();
-    final int photoId = latestPhoto.idPhoto;
+    final int? photoId = latestPhoto.idPhoto;
+
+    if (photoId == null) {
+      throw Exception('Failed to retrieve photo ID');
+    }
 
     print('Latest photo ID: $photoId'); // Ligne de débogage
 
@@ -62,9 +59,12 @@ class InscriptionPlanteService {
       'nom': name,
       'espece': species,
       'description': description,
-      'idUtilisateur': userId,
-      'idPhoto': photoId,
       'idVille': cityId,
+      'lon': '0.0',  // Utilisez une valeur par défaut si nécessaire
+      'lat': '0.0',  // Utilisez une valeur par défaut si nécessaire
+      'idPhoto': photoId,
+      'idUtilisateur': userId.toInt(),
+      'idUtilisateur1': 0
     };
 
     print('Sending plant data: $plantData'); // Ligne de débogage

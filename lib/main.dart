@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
         await TokenStorage().storeId(utilisateur!.idUtilisateur);
         print('Fetched utilisateur: $utilisateur'); // Debug fetched user
-
+        print('Token data: $tokenData'); // Debug token data
         if (utilisateur != null) {
           setState(() {
             userName = utilisateur.nom;

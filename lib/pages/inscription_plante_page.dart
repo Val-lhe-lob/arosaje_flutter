@@ -6,21 +6,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
-class InscriptionPlantePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: InscriptionPlanteForm(),
-    );
-  }
-}
-
-class InscriptionPlanteForm extends StatefulWidget {
+class InscriptionPlantePage extends StatefulWidget {
   @override
   _InscriptionPlanteFormState createState() => _InscriptionPlanteFormState();
 }
 
-class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
+class _InscriptionPlanteFormState extends State<InscriptionPlantePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _speciesController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -65,10 +56,19 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
   }
 
   Future<void> _registerPlant() async {
-    try {
+
+      // Vérifiez que tous les champs obligatoires ne sont pas null
       if (_base64Image == null || _imageExtension == null || _selectedCityId == null) {
         throw Exception('All fields are required');
       }
+
+      // Ajoutez des impressions pour déboguer les valeurs
+      print('Name: ${_nameController.text}');
+      print('Species: ${_speciesController.text}');
+      print('Description: ${_descriptionController.text}');
+      print('City ID: $_selectedCityId');
+      print('Base64 Image: $_base64Image');
+      print('Image Extension: $_imageExtension');
 
       await InscriptionPlanteService.registerPlant(
         _nameController.text,
@@ -78,10 +78,9 @@ class _InscriptionPlanteFormState extends State<InscriptionPlanteForm> {
         _imageExtension,
         _selectedCityId!,
       );
+
       print('Plant registered successfully');
-    } catch (e) {
-      print('Error registering plant: $e');
-    }
+    
   }
 
   @override

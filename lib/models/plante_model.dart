@@ -10,7 +10,7 @@ class Plante {
   final String lat;
   final int? idPhoto;
   final int idUtilisateur;
-  final int idUtilisateur1;
+  final int? idUtilisateur1;
 
   Plante({
     required this.idPlante,
@@ -24,7 +24,7 @@ class Plante {
     required this.lat,
     this.idPhoto,
     required this.idUtilisateur,
-    required this.idUtilisateur1,
+    this.idUtilisateur1,
   });
 
   factory Plante.fromJson(Map<String, dynamic> json) {

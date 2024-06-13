@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:arosaje_flutter/config.dart';
 import 'package:arosaje_flutter/models/photo_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,7 +9,7 @@ class PhotoService {
   PhotoService({required this.baseUrl});
 
   Future<List<Photo>> fetchPhotos() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/photos'));
+    final response = await http.get(Uri.parse(Config.apiUrl+'/api/photos'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
