@@ -22,15 +22,32 @@ class InscriptionService {
         );
 
         if (response.statusCode == 200 || response.statusCode == 201) {
-          print("ça a réussi normalement");
-          return true;
+          // Assuming the API response contains the new user's ID
+          int userId = response.data['id'];
+
+          final membreResponse = await _dio.post(
+            Config.apiUrl + '/api/Membres',
+            data: {
+              "idUtilisateur": userId,
+            },
+            options: Options(
+              headers: {'Content-Type': 'application/json'},
+            ),
+          );
+
+          if (membreResponse.statusCode == 200 || membreResponse.statusCode == 201) {
+            print("User and member registration successful");
+            return true;
+          } else {
+            print("Failed to insert into Membre: " + membreResponse.statusCode.toString());
+            return false;
+          }
         } else {
-          print("Code statut : " + response.statusCode.toString());
+          print("Code status: " + response.statusCode.toString());
           return false;
         }
       } else {
-        print("L'inscription n'a pas abouti");
-        print("$mdp = $repeatmdp");
+        print("Passwords do not match");
         return false;
       }
     } catch (e) {

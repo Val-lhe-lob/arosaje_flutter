@@ -33,7 +33,6 @@ class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
-
 class _MyHomePageState extends State<MyHomePage> {
   final PageController _pageController = PageController();
 
@@ -41,6 +40,38 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String? userName;
   String? email;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  void _fetchUserData() async {
+    try {
+      List? tokenData = await TokenStorage().getToken();
+      print('Token data: $tokenData'); // Debug token data
+
+      if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
+        Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
+        await TokenStorage().storeId(utilisateur!.idUtilisateur);
+        print('Fetched utilisateur: $utilisateur'); // Debug fetched user
+        if (utilisateur != null) {
+          setState(() {
+            userName = utilisateur.nom;
+            email = utilisateur.email;
+          });
+          print('User Name: $userName, Email: $email'); // Debug userName and email
+        } else {
+          print('Error: Utilisateur is null');
+        }
+      } else {
+        print('Error: Token data is null');
+      }
+    } catch (e) {
+      print('Error fetching profile data: $e');
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,55 +84,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showProfileInfo() async {
-    try {
-      List? tokenData = await TokenStorage().getToken();
-      print('Token data: $tokenData'); // Debug token data
-
-      if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
-        Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
-        await TokenStorage().storeId(utilisateur!.idUtilisateur);
-        print('Fetched utilisateur: $utilisateur'); // Debug fetched user
-        print('Token data: $tokenData'); // Debug token data
-        if (utilisateur != null) {
-          setState(() {
-            userName = utilisateur.nom;
-            email = utilisateur.email;
-          });
-          print('User Name: $userName, Email: $email'); // Debug userName and email
-          ProfileDialog().showUserInfoDialog(context, userName!, email!);
-        } else {
-          print('Error: Utilisateur is null');
-          _showErrorDialog("Error", "Utilisateur is null");
-        }
-      } else {
-        print('Error: Token data is null');
-        ProfileDialog().showLoginDialog(context);
-      }
-    } catch (e) {
-      print('Error fetching profile data: $e');
+  void _showProfileInfo() {
+    if (userName != null && email != null) {
+      ProfileDialog().showUserInfoDialog(context, userName!, email!);
+    } else {
       ProfileDialog().showLoginDialog(context);
     }
-  }
-
-  void _showErrorDialog(String title, String content) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _navigateToPlantesUtilisateur() {
@@ -110,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
       MaterialPageRoute(builder: (context) => PlantesUtilisateurPage()),
     );
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
