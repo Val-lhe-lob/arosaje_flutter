@@ -1,15 +1,16 @@
+import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/config.dart';
 import '../secure_local_storage_token.dart';
 
 class ConnexionService {
   final TokenStorage _tokenStorage = TokenStorage();
-  final Dio _dio = Dio();
+  final Dio _dio = Dio()..httpClientAdapter = BrowserHttpClientAdapter(); // Add this for web support
 
-  Future<bool> authenticate(String email, String mdp) async {
+  Future<bool> authenticate(String email, String mdp) async {print(mdp);
     try {
       final response = await _dio.post(
-        Config.apiUrl + '/api/Token',
+        '${Config.apiUrl}/api/Token',
         data: {
           "email": email,
           "mdp": mdp,
@@ -19,19 +20,18 @@ class ConnexionService {
         ),
       );
 
-      // Check if the request was successful (status code 200)
+      
+
       if (response.statusCode == 200) {
-        final token = response.data; // Extract the token from the response
+        final token = response.data;
         await _tokenStorage.storeToken(token, email);
         return true;
       } else {
-        // Print detailed error information
         print('Failed to authenticate: ${response.statusCode}');
         print('Response body: ${response.data}');
         return false;
       }
     } catch (e) {
-      // Print detailed error information
       print('Exception during authentication: $e');
       return false;
     }
@@ -42,7 +42,6 @@ class ConnexionService {
       final token = await _tokenStorage.getToken();
       return token != null;
     } catch (e) {
-      // Print detailed error information
       print('Exception while checking login status: $e');
       return false;
     }
