@@ -1,16 +1,16 @@
-import 'package:dio/browser.dart';
+
 import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/config.dart';
 import '../secure_local_storage_token.dart';
 
 class ConnexionService {
   final TokenStorage _tokenStorage = TokenStorage();
-  final Dio _dio = Dio()..httpClientAdapter = BrowserHttpClientAdapter(); // Add this for web support
+  final Dio _dio = Dio();
 
   Future<bool> authenticate(String email, String mdp) async {print(mdp);
     try {
-      final response = await _dio.post(
-        '${Config.apiUrl}/api/Token',
+       final response = await _dio.post(
+          Config.apiUrl + '/api/Token',
         data: {
           "email": email,
           "mdp": mdp,

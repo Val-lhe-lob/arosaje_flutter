@@ -124,7 +124,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                   String hashedPasswordRepeat = digestRepeat.toString();
 
                   InscriptionService inscriptionService = InscriptionService();
-                  await inscriptionService.inscription(
+                  final success = await inscriptionService.inscription(
                     _nomController.text,
                     _prenomController.text,
                     int.parse(_ageController.text),
@@ -132,10 +132,16 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     hashedPassword,
                     hashedPasswordRepeat,
                   );
+                  if (success) {
+                  // Navigate to MyHomePage if inscription is successful
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
+                } else {
+                  // Handle case where inscription failed (optional: show error message)
+                  print("Inscription failed");
+                }
                 },
                 child: Text('S\'inscrire'),
               ),
