@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
-import 'package:arosaje_flutter/pages/ville_page.dart';
-import 'package:arosaje_flutter/pages/plante_page.dart';
-import 'package:arosaje_flutter/pages/message_page.dart';
-import 'package:arosaje_flutter/header.dart';
-import 'package:arosaje_flutter/pages/connexion_page.dart'; 
-import 'package:arosaje_flutter/pages/inscription_page.dart'; 
-
+import 'package:arosaje_flutter/pages/message_form_page.dart';
 
 class PlanteDetailPage extends StatelessWidget {
   final Plante plante;
@@ -16,48 +10,27 @@ class PlanteDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: Header(
-          onHeaderLinkTap: (String text) {
-            if (text == 'Plantes') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PlantesPage()),
-              );
-            } else if (text == 'Villes') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => VillesPage()),
-              );
-            } else if (text == 'Message') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MessagesPage()),
-              );
-            }
-          },
-          onProfileTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return ProfileDialog();
-              },
-            );
-          },
-        ),
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Détails de la plante",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                Text(
+                  "Détails de la plante",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
           Container(
@@ -113,7 +86,19 @@ class PlanteDetailPage extends StatelessWidget {
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
-                      // logique a implementer
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: SingleChildScrollView(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.8, // Définir la largeur du conteneur à 80% de la largeur de l'écran
+                                child: MessageForm(),
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: Text(
                       'Envoyer un message\nau propriétaire',
@@ -127,44 +112,6 @@ class PlanteDetailPage extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ProfileDialog extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text("Vous n'êtes pas connecté"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ConnexionPage()),
-              );
-            },
-            child: Text('Se connecter'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(227, 231, 34, 1),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InscriptionPage()),
-              );
-            },
-            child: Text('Créer un compte'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(227, 231, 34, 1),
             ),
           ),
         ],

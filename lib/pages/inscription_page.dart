@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:arosaje_flutter/services/inscription_service.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import 'package:arosaje_flutter/main.dart';
 
 class InscriptionPage extends StatefulWidget {
   @override
@@ -38,67 +42,111 @@ class _InscriptionPageState extends State<InscriptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inscription'),
-      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: _nomController,
-              decoration: InputDecoration(
-                labelText: 'Nom d\'utilisateur',
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    Text(
+                      "Inscription",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _prenomController,
-              decoration: InputDecoration(
-                labelText: 'Prénom',
+              TextField(
+                controller: _nomController,
+                decoration: InputDecoration(
+                  labelText: 'Nom d\'utilisateur',
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _ageController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Âge',
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _prenomController,
+                decoration: InputDecoration(
+                  labelText: 'Prénom',
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Adresse email',
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _ageController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Âge',
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Mot de passe',
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Adresse email',
+                ),
               ),
-            ),
-            SizedBox(height: 12.0),
-            TextField(
-              controller: _repeatPasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Répéter le mot de passe',
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Mot de passe',
+                ),
               ),
-            ),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: () {
-            // _nomController.text, _prenomController.text, _ageController.text, _emailController.text et _passwordController.text ici
+              SizedBox(height: 12.0),
+              TextField(
+                controller: _repeatPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Répéter le mot de passe',
+                ),
+              ),
+              SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: () async {
+                  var bytes = utf8.encode(_passwordController.text);
+                  var digest = sha256.convert(bytes);
+                  String hashedPassword = digest.toString();
 
-              },
-              child: Text('S\'inscrire'),
-            ),
-          ],
+                  var bytesRepeat = utf8.encode(_passwordController.text);
+                  var digestRepeat = sha256.convert(bytesRepeat);
+                  String hashedPasswordRepeat = digestRepeat.toString();
+
+                  InscriptionService inscriptionService = InscriptionService();
+                  final success = await inscriptionService.inscription(
+                    _nomController.text,
+                    _prenomController.text,
+                    int.parse(_ageController.text),
+                    _emailController.text,
+                    hashedPassword,
+                    hashedPasswordRepeat,
+                  );
+                  if (success) {
+                  // Navigate to MyHomePage if inscription is successful
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                  );
+                } else {
+                  // Handle case where inscription failed (optional: show error message)
+                  print("Inscription failed");
+                }
+                },
+                child: Text('S\'inscrire'),
+              ),
+            ],
+          ),
         ),
       ),
     );

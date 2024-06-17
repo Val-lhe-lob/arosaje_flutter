@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import 'package:arosaje_flutter/services/connexion_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:arosaje_flutter/main.dart';
 
 class ConnexionPage extends StatefulWidget {
   @override
@@ -26,14 +31,31 @@ class _ConnexionPageState extends State<ConnexionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Connexion'),
-      ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  Text(
+                    "Connexion",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -50,8 +72,32 @@ class _ConnexionPageState extends State<ConnexionPage> {
             ),
             SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed: () {
-              //_emailController.text et _passwordController.text
+              onPressed: () async {
+                var bytes = utf8.encode(_passwordController.text);
+                var digest = sha256.convert(bytes);
+                String hashedPassword = digest.toString();
+                var connexionService = ConnexionService();
+                var test = connexionService.authenticate(
+                  _emailController.text,
+                  hashedPassword,
+                );
+                if (await test) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                  );
+                } else {
+                  Fluttertoast.showToast(
+                    msg:
+                        "La connexion s'est mal passée, veuillez réessayer s'il vous plaît",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
+                }
               },
               child: Text('Se connecter'),
             ),
