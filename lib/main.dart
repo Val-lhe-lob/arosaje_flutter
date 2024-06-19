@@ -1,8 +1,3 @@
-import 'package:arosaje_flutter/models/utilisateur_model.dart';
-import 'package:arosaje_flutter/pages/plantes_inscrites_page.dart';
-import 'package:arosaje_flutter/secure_local_storage_token.dart';
-import 'package:arosaje_flutter/services/deconnexion_service.dart';
-import 'package:arosaje_flutter/services/user_information_service.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
@@ -10,6 +5,12 @@ import 'package:arosaje_flutter/pages/message_page.dart';
 import 'package:arosaje_flutter/pages/connexion_page.dart';
 import 'package:arosaje_flutter/pages/inscription_page.dart';
 import 'package:arosaje_flutter/pages/inscription_plante_page.dart';
+import 'package:arosaje_flutter/models/utilisateur_model.dart';
+import 'package:arosaje_flutter/pages/plantes_inscrites_page.dart';
+import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/services/deconnexion_service.dart';
+import 'package:arosaje_flutter/services/user_information_service.dart';
+import 'package:arosaje_flutter/pages/map_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,11 +34,10 @@ class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
+
 class _MyHomePageState extends State<MyHomePage> {
   final PageController _pageController = PageController();
-
   int _selectedIndex = 0;
-
   String? userName;
   String? email;
 
@@ -50,23 +50,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void _fetchUserData() async {
     try {
       List? tokenData = await TokenStorage().getToken();
-      print('Token data: $tokenData'); // Debug token data
-
       if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
         Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
         await TokenStorage().storeId(utilisateur!.idUtilisateur);
-        print('Fetched utilisateur: $utilisateur'); // Debug fetched user
         if (utilisateur != null) {
           setState(() {
             userName = utilisateur.nom;
             email = utilisateur.email;
           });
-          print('User Name: $userName, Email: $email'); // Debug userName and email
-        } else {
-          print('Error: Utilisateur is null');
         }
-      } else {
-        print('Error: Token data is null');
       }
     } catch (e) {
       print('Error fetching profile data: $e');
@@ -98,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       MaterialPageRoute(builder: (context) => PlantesUtilisateurPage()),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           PlanteOrVillePage(),
           InscriptionPlantePage(),
+          MapScreen(), // Include the MapScreen here
           VillesPage(),
           MessagesPage(),
         ],

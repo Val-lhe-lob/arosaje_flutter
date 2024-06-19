@@ -3,7 +3,7 @@ import 'package:arosaje_flutter/models/plante_model.dart';
 import '../config.dart';
 
 class PlantesService {
-  static Dio _dio = Dio();
+  static Dio _dio = Dio()..interceptors.add(LogInterceptor(responseBody: true));
 
   static Future<List<Plante>> getPlantes() async {
     try {
