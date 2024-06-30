@@ -1,6 +1,6 @@
+import 'package:arosaje_flutter/pages/message_form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
-import 'package:arosaje_flutter/pages/message_form_page.dart';
 
 class PlanteDetailPage extends StatelessWidget {
   final Plante plante;
@@ -92,8 +92,11 @@ class PlanteDetailPage extends StatelessWidget {
                           return AlertDialog(
                             content: SingleChildScrollView(
                               child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8, // Définir la largeur du conteneur à 80% de la largeur de l'écran
-                                child: MessageForm(),
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: MessageForm(
+                                  senderId: plante.idUtilisateur1,
+                                  receiverId: plante.idUtilisateur,
+                                ),
                               ),
                             ),
                           );
