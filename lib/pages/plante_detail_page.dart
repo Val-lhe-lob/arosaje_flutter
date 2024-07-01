@@ -1,11 +1,33 @@
-import 'package:arosaje_flutter/pages/message_form_page.dart';
+import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
+import 'package:arosaje_flutter/pages/message_form_page.dart';
 
-class PlanteDetailPage extends StatelessWidget {
+class PlanteDetailPage extends StatefulWidget {
   final Plante plante;
 
   PlanteDetailPage({required this.plante});
+
+  @override
+  _PlanteDetailPageState createState() => _PlanteDetailPageState();
+}
+
+class _PlanteDetailPageState extends State<PlanteDetailPage> {
+  int? senderId;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSenderId();
+  }
+
+  Future<void> _initializeSenderId() async {
+    TokenStorage tokenStorage = TokenStorage();
+    List? tokenData = await tokenStorage.getToken();
+    setState(() {
+      senderId = int.tryParse(tokenData?[2] ?? '');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +64,7 @@ class PlanteDetailPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    plante.nom ?? "",
+                    widget.plante.nom ?? "",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -53,7 +75,7 @@ class PlanteDetailPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    plante.description ?? '',
+                    widget.plante.description ?? '',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -85,7 +107,7 @@ class PlanteDetailPage extends StatelessWidget {
                 Container(
                   height: 60,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: senderId == null ? null : () {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -94,8 +116,8 @@ class PlanteDetailPage extends StatelessWidget {
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.8,
                                 child: MessageForm(
-                                  senderId: plante.idUtilisateur1,
-                                  receiverId: plante.idUtilisateur,
+                                  senderId: senderId!,
+                                  receiverId: widget.plante.idUtilisateur,
                                 ),
                               ),
                             ),
