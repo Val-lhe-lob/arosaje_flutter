@@ -11,6 +11,7 @@ import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:arosaje_flutter/services/deconnexion_service.dart';
 import 'package:arosaje_flutter/services/user_information_service.dart';
 import 'package:arosaje_flutter/pages/map_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(MyApp());
@@ -78,10 +79,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _showProfileInfo() {
     if (userName != null && email != null) {
-      ProfileDialog().showUserInfoDialog(context, userName!, email!);
+      ProfileDialog(onLogout: _handleLogout).showUserInfoDialog(context, userName!, email!);
     } else {
-      ProfileDialog().showLoginDialog(context);
+      ProfileDialog(onLogout: _handleLogout).showLoginDialog(context);
     }
+  }
+
+  void _handleLogout() {
+    setState(() {
+      userName = null;
+      email = null;
+      _selectedIndex = 0; // Optionnellement, réinitialiser à la page d'accueil
+    });
   }
 
   void _navigateToPlantesUtilisateur() {
@@ -110,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           PlanteOrVillePage(),
           InscriptionPlantePage(),
-          MapScreen(), // Include the MapScreen here
+          MapScreen(), // Inclure MapScreen ici
           VillesPage(),
           MessagesPage(),
         ],
@@ -304,6 +313,14 @@ class ProfileDialog extends StatelessWidget {
               onPressed: () async {
                 await DeconnexionService().deconnexion();
                 Navigator.of(context).pop();
+                // Optionally, you can show a message or toast here indicating the user has logged out
+                Fluttertoast.showToast(
+                  msg: "Déconnexion réussie",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.green,
+                  textColor: Colors.white,
+                );
               },
               child: Text('Déconnexion'),
             ),

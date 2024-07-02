@@ -6,6 +6,26 @@ import '../config.dart';
 class InscriptionService {
   Dio _dio = Dio();
 
+  Future<int?> _getUserIdByEmail(String email) async {
+    try {
+      final response = await _dio.get(
+        Config.apiUrl + '/api/Utilisateurs/idByMail/$email',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data as int;
+      } else {
+        throw Exception("Failed to retrieve user ID. Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Exception while retrieving user ID: $e');
+      return null;
+    }
+  }
+
   Future<bool> inscription(String nom, String prenom, int age, String email, String mdp, String repeatmdp) async {
     try {
       if (mdp != repeatmdp) {
@@ -45,9 +65,14 @@ class InscriptionService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Assuming the API response contains the new user's ID
-        int userId = response.data['id'];
-        print("Inscription réussie pour l'utilisateur avec l'ID: $userId");
+        print("Inscription réussie pour l'utilisateur: $email");
+
+        // Get the user ID using the email
+        int? userId = await _getUserIdByEmail(email);
+
+        if (userId == null) {
+          throw Exception("Failed to retrieve the user ID after registration.");
+        }
 
         final membreResponse = await _dio.post(
           Config.apiUrl + '/api/Membres',
