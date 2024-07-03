@@ -39,17 +39,6 @@ class InscriptionService {
         return false;
       }
 
-      if (mdp.length < 8) {
-        Fluttertoast.showToast(
-          msg: "Le mot de passe doit avoir au moins 8 caractères.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-        return false;
-      }
-
       final response = await _dio.post(
         Config.apiUrl + '/api/Utilisateurs',
         data: {
@@ -69,13 +58,13 @@ class InscriptionService {
 
         // Get the user ID using the email
         int? userId = await _getUserIdByEmail(email);
-
+        print(userId);
         if (userId == null) {
           throw Exception("Failed to retrieve the user ID after registration.");
         }
 
         final membreResponse = await _dio.post(
-          Config.apiUrl + '/api/Membres',
+          Config.apiUrl + '/api/Membres/CreateWithUserId',
           data: {
             "idUtilisateur": userId,
           },
@@ -91,8 +80,20 @@ class InscriptionService {
           throw Exception("Échec de l'insertion dans Membre. Code: ${membreResponse.statusCode}");
         }
       } else {
+        print("Échec de l'inscription. Code: ${response.statusCode}, Body: ${response.data}");
         throw Exception("Échec de l'inscription. Code: ${response.statusCode}");
       }
+    } on DioError catch (dioError) {
+      // Log the server response
+      print('DioError lors de l\'inscription: ${dioError.response?.data}');
+      Fluttertoast.showToast(
+        msg: "Erreur lors de l'inscription: ${dioError.response?.data['message'] ?? dioError.message}",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return false;
     } catch (e) {
       print('Exception lors de l\'inscription: $e');
       return false;

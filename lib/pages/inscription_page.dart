@@ -3,6 +3,7 @@ import 'package:arosaje_flutter/services/inscription_service.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:arosaje_flutter/main.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class InscriptionPage extends StatefulWidget {
   @override
@@ -115,11 +116,34 @@ class _InscriptionPageState extends State<InscriptionPage> {
               SizedBox(height: 24.0),
               ElevatedButton(
                 onPressed: () async {
+                  // Check if password is at least 8 characters long
+                  if (_passwordController.text.length < 8) {
+                    Fluttertoast.showToast(
+                      msg: "Le mot de passe doit avoir au moins 8 caractères.",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                    return;
+                  }
+
+                  if (_passwordController.text != _repeatPasswordController.text) {
+                    Fluttertoast.showToast(
+                      msg: "Les mots de passe ne correspondent pas.",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                    return;
+                  }
+
                   var bytes = utf8.encode(_passwordController.text);
                   var digest = sha256.convert(bytes);
                   String hashedPassword = digest.toString();
 
-                  var bytesRepeat = utf8.encode(_passwordController.text);
+                  var bytesRepeat = utf8.encode(_repeatPasswordController.text);
                   var digestRepeat = sha256.convert(bytesRepeat);
                   String hashedPasswordRepeat = digestRepeat.toString();
 
@@ -133,15 +157,15 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     hashedPasswordRepeat,
                   );
                   if (success) {
-                  // Navigate to MyHomePage if inscription is successful
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyHomePage()),
-                  );
-                } else {
-                  // Handle case where inscription failed (optional: show error message)
-                  print("Inscription failed");
-                }
+                    // Navigate to MyHomePage if inscription is successful
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  } else {
+                    // Handle case where inscription failed (optional: show error message)
+                    print("Inscription failed");
+                  }
                 },
                 child: Text('S\'inscrire'),
               ),

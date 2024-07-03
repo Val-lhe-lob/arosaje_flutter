@@ -77,13 +77,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showProfileInfo() {
-    if (userName != null && email != null) {
-      ProfileDialog(onLogout: _handleLogout).showUserInfoDialog(context, userName!, email!);
-    } else {
-      ProfileDialog(onLogout: _handleLogout).showLoginDialog(context);
-    }
+void _showProfileInfo() {
+  if (userName != null && email != null) {
+    ProfileDialog(onLogout: _handleLogout).showUserInfoDialog(context, userName!, email!);
+  } else {
+    ProfileDialog(onLogout: _handleLogout).showLoginDialog(context);
   }
+}
 
   void _handleLogout() {
     setState(() {
@@ -277,6 +277,10 @@ class HomeContent extends StatelessWidget {
 }
 
 class ProfileDialog extends StatelessWidget {
+  final VoidCallback onLogout;
+
+  ProfileDialog({required this.onLogout});
+
   void showUserInfoDialog(BuildContext context, String userName, String email) {
     showDialog(
       context: context,
@@ -311,9 +315,8 @@ class ProfileDialog extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                await DeconnexionService().deconnexion();
+                await DeconnexionService().deconnexion(onLogout);
                 Navigator.of(context).pop();
-                // Optionally, you can show a message or toast here indicating the user has logged out
                 Fluttertoast.showToast(
                   msg: "Déconnexion réussie",
                   toastLength: Toast.LENGTH_SHORT,
