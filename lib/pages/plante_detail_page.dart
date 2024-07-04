@@ -29,6 +29,26 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
     });
   }
 
+  void _showLoginRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Connexion requise'),
+          content: Text('Vous devez vous connecter ou vous inscrire pour envoyer un message.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,23 +127,27 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
                 Container(
                   height: 60,
                   child: ElevatedButton(
-                    onPressed: senderId == null ? null : () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: SingleChildScrollView(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                child: MessageForm(
-                                  senderId: senderId!,
-                                  receiverId: widget.plante.idUtilisateur,
+                    onPressed: () {
+                      if (senderId == null) {
+                        _showLoginRequiredDialog();
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: SingleChildScrollView(
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * 0.8,
+                                  child: MessageForm(
+                                    senderId: senderId!,
+                                    receiverId: widget.plante.idUtilisateur,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      );
+                            );
+                          },
+                        );
+                      }
                     },
                     child: Text(
                       'Envoyer un message\nau propriétaire',
