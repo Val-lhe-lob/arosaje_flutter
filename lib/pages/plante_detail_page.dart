@@ -71,6 +71,7 @@ class PlanteDetailPage extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // Logique pour garder la plante
+                      
                     },
                     child: Text(
                       'Garder la plante',

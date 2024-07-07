@@ -57,17 +57,12 @@ class _InscriptionPlanteFormState extends State<InscriptionPlantePage> {
 
   Future<void> _registerPlant() async {
 
-      // Vérifiez que tous les champs obligatoires ne sont pas null
-      if (_base64Image == null || _imageExtension == null || _selectedCityId == null) {
-        throw Exception('All fields are required');
-      }
-
       // Ajoutez des impressions pour déboguer les valeurs
-      print('Name: ${_nameController.text}');
-      print('Species: ${_speciesController.text}');
+      print('nom: ${_nameController.text}');
+      print('espece: ${_speciesController.text}');
       print('Description: ${_descriptionController.text}');
-      print('City ID: $_selectedCityId');
-      print('Base64 Image: $_base64Image');
+      print('idVille: $_selectedCityId');
+      print('idPhoto: $_base64Image');
       print('Image Extension: $_imageExtension');
 
       await InscriptionPlanteService.registerPlant(
