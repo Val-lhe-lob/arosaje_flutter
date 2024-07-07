@@ -14,7 +14,92 @@ class PlanteDetailPage extends StatefulWidget {
 
   @override
   _PlanteDetailPageState createState() => _PlanteDetailPageState();
+  
+  Future<bool> _isUserLoggedIn() async {
+    List? token = await _tokenStorage.getToken();
+    return token != null && token[0] != null;
+  }
+
+  Future<int?> _getUserId() async {
+    List? token = await _tokenStorage.getToken();
+    return token != null && token[2] != null ? int.tryParse(token[2]) : null;
+  }
+
+  void _handleGarderLaPlante(BuildContext context) async {
+    bool isLoggedIn = await _isUserLoggedIn();
+    if (isLoggedIn) {
+      int? userId = await _getUserId();
+      if (userId != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Confirmation"),
+              content: Text("Êtes-vous sûr de vouloir garder cette plante ?"),
+              actions: [
+                TextButton(
+                  child: Text("Non"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text("Oui"),
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // Fermer le dialogue
+                    bool success = await GarderPlanteService.garderPlante(plante.idPlante!, userId);
+                    if (success) {
+                      Fluttertoast.showToast(
+                        msg: "Vous avez gardé la plante avec succès",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "Une erreur s'est produite, veuillez réessayer",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Impossible de récupérer l'ID de l'utilisateur",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "Vous devez être connecté",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
 }
+
 
 class _PlanteDetailPageState extends State<PlanteDetailPage> {
   int? senderId;
