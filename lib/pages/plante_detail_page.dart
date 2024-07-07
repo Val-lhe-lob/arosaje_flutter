@@ -47,7 +47,7 @@ class PlanteDetailPage extends StatefulWidget {
                   child: Text("Oui"),
                   onPressed: () async {
                     Navigator.of(context).pop(); // Fermer le dialogue
-                    bool success = await GarderPlanteService.garderPlante(plante.idPlante!, userId);
+                    bool success = await GarderPlanteService.garderPlante(plante.idPlante, userId);
                     if (success) {
                       Fluttertoast.showToast(
                         msg: "Vous avez gardé la plante avec succès",
