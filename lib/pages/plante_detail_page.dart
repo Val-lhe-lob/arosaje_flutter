@@ -113,6 +113,7 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Logique pour garder la plante
+                      
                     },
                     child: Text(
                       'Garder la plante',

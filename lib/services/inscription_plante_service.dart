@@ -3,9 +3,11 @@ import 'package:arosaje_flutter/config.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
 import 'package:arosaje_flutter/services/photo_service.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 class InscriptionPlanteService {
+  static Dio _dio = Dio(); // Créez une instance Dio
+
   static Future<void> registerPlant(String name, String species, String description, String? base64Image, String? imageExtension, int cityId) async {
     try {
       // Récupération du token
@@ -24,98 +26,101 @@ class InscriptionPlanteService {
       }
 
       // Étape 1: Enregistrer l'image
-      Map<String, dynamic> imageData = {
-        'image': base64Image,
-        'extension': imageExtension,
-      };
+      int? photoId;
+      if (base64Image != null && imageExtension != null) {
+        Map<String, dynamic> imageData = {
+          'image': base64Image,
+          'extension': imageExtension,
+        };
 
-      final responsePhoto = await http.post(
-        Uri.parse('${Config.apiUrl}/api/photos'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(imageData),
-      );
+        final responsePhoto = await _dio.post(
+          '${Config.apiUrl}/api/photos',
+          data: jsonEncode(imageData),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+          ),
+        );
 
-      if (responsePhoto.statusCode != 201) {
-        throw Exception('Failed to register photo');
-      }
-
-      // Étape 2: Récupérer l'ID de la dernière photo
-      final photoService = PhotoService(baseUrl: Config.apiUrl);
-      final latestPhoto = await photoService.fetchLatestPhoto();
-      final int? photoId = latestPhoto.idPhoto;
-
-      if (photoId == null) {
-        throw Exception('Failed to retrieve photo ID');
-      }
-
-      print('Latest photo ID: $photoId'); // Ligne de débogage
-
-      // Étape 3: Enregistrer la plante avec l'ID de la photo
-      Map<String, dynamic> plantData = {
-        'nom': name,
-        'espece': species,
-        'description': description,
-        'categorie': 'Indoor',  // Ajoutez une catégorie si nécessaire
-        'etat': 'Good',  // Ajoutez un état si nécessaire
-        'lon': '0.0',  // Utilisez une valeur par défaut si nécessaire
-        'lat': '0.0',  // Utilisez une valeur par défaut si nécessaire
-        'idVille': cityId,
-        'idPhoto': photoId,
-        'idUtilisateur': userId,
-        'idUtilisateur1': 0,
-        'idPhotoNavigation': {
-          'idPhoto': photoId,
-        },
-        'idUtilisateurNavigation': {
-          'idUtilisateur': userId,
-        },
-        'idVilleNavigation': {
-          'idVille': cityId,
+        if (responsePhoto.statusCode == 201) {
+          photoId = responsePhoto.data['id']; // Assurez-vous que votre API retourne l'ID de la photo correctement
+          print('Photo enregistrée avec ID: $photoId');
+        } else {
+          throw Exception('Échec de l\'enregistrement de la photo. Code: ${responsePhoto.statusCode}');
         }
-      };
+      }
 
-      print('Sending plant data: $plantData'); // Ligne de débogage
+      print('Sending plant data: ');
+      print('Species: $species');
+      print('Name: $name');
+      print('Description: $description');
 
-      final response = await http.post(
-        Uri.parse('${Config.apiUrl}/api/plantes'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
+      // Étape 2: Enregistrer la plante
+      final response = await _dio.post(
+        Config.apiUrl + '/api/plantes',
+        data: {
+          'espece': species,
+          'nom': name,
+          'description': description,
+          'categorie': 'Indoor', // Ajoutez une catégorie si nécessaire
+          'etat': 'Good', // Ajoutez un état si nécessaire
+          'lon': "0.0", // Valeur par défaut pour la longitude
+          'lat': "test", // Valeur par défaut pour la latitude
+          'idVille': cityId,
+          'idPhoto': photoId ?? 1, // Utilisation d'une valeur par défaut pour l'ID de la photo si non disponible
+          'idUtilisateur': 1,
+          'idUtilisateur1': 1, // Assurez-vous que cela correspond à votre logique de données
         },
-        body: jsonEncode(plantData),
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
       );
 
       print('Plant registration response: ${response.statusCode}'); // Ligne de débogage
-      print('Plant registration response body: ${response.body}'); // Ligne de débogage
+      print('Plant registration response body: ${response.data}'); // Ligne de débogage
 
-      if (response.statusCode != 201) {
-        throw Exception('Failed to register plant');
+      if (response.statusCode == 201) {
+        print('Enregistrement de la plante réussi.');
+      } else {
+        throw Exception('Échec de l\'enregistrement de la plante. Code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error during plant registration: $e'); // Ligne de débogage pour l'erreur
+      if (e is DioError) {
+        print('Exception lors de l\'inscription de la plante: ${e.response?.statusCode}');
+        print('DioError response data: ${e.response?.data}');
+      } else {
+        print('Exception lors de l\'inscription de la plante: $e');
+      }
       throw e;
     }
   }
 
-
-
   static Future<List<Ville>> fetchCities() async {
-    final response = await http.get(
-      Uri.parse('${Config.apiUrl}/api/villes'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
+    try {
+      final response = await _dio.get(
+        '${Config.apiUrl}/api/villes',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to load cities');
+      if (response.statusCode == 200) {
+        List<dynamic> body = response.data;
+        List<Ville> cities = body.map((dynamic item) => Ville.fromJson(item)).toList();
+        return cities;
+      } else {
+        throw Exception('Failed to load cities. Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception while fetching cities: $e');
+      throw e;
     }
-
-    List<dynamic> body = jsonDecode(response.body);
-    List<Ville> cities = body.map((dynamic item) => Ville.fromJson(item)).toList();
-    return cities;
   }
 }
