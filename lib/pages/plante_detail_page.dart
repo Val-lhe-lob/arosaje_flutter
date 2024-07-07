@@ -1,11 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/pages/message_form_page.dart';
+import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/services/garder_plante.dart';
 
 class PlanteDetailPage extends StatelessWidget {
   final Plante plante;
+  final TokenStorage _tokenStorage = TokenStorage();
 
   PlanteDetailPage({required this.plante});
+
+  Future<bool> _isUserLoggedIn() async {
+    List? token = await _tokenStorage.getToken();
+    return token != null && token[0] != null;
+  }
+
+  Future<int?> _getUserId() async {
+    List? token = await _tokenStorage.getToken();
+    return token != null && token[2] != null ? int.tryParse(token[2]) : null;
+  }
+
+  void _handleGarderLaPlante(BuildContext context) async {
+    bool isLoggedIn = await _isUserLoggedIn();
+    if (isLoggedIn) {
+      int? userId = await _getUserId();
+      if (userId != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Confirmation"),
+              content: Text("Êtes-vous sûr de vouloir garder cette plante ?"),
+              actions: [
+                TextButton(
+                  child: Text("Non"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text("Oui"),
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // Fermer le dialogue
+                    bool success = await GarderPlanteService.garderPlante(plante.idPlante!, userId);
+                    if (success) {
+                      Fluttertoast.showToast(
+                        msg: "Vous avez gardé la plante avec succès",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "Une erreur s'est produite, veuillez réessayer",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Impossible de récupérer l'ID de l'utilisateur",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "Vous devez être connecté",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +157,7 @@ class PlanteDetailPage extends StatelessWidget {
                 Container(
                   height: 60,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Logique pour garder la plante
-                      
-                    },
+                    onPressed: () => _handleGarderLaPlante(context),
                     child: Text(
                       'Garder la plante',
                       style: TextStyle(color: Colors.black),
@@ -93,7 +178,7 @@ class PlanteDetailPage extends StatelessWidget {
                           return AlertDialog(
                             content: SingleChildScrollView(
                               child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8, // Définir la largeur du conteneur à 80% de la largeur de l'écran
+                                width: MediaQuery.of(context).size.width * 0.8,
                                 child: MessageForm(),
                               ),
                             ),
