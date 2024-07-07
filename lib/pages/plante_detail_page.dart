@@ -1,10 +1,14 @@
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/pages/message_form_page.dart';
+import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/services/garder_plante.dart';
 
 class PlanteDetailPage extends StatefulWidget {
   final Plante plante;
+  final TokenStorage _tokenStorage = TokenStorage();
 
   PlanteDetailPage({required this.plante});
 
@@ -111,10 +115,7 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
                 Container(
                   height: 60,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Logique pour garder la plante
-                      
-                    },
+                    onPressed: () => _handleGarderLaPlante(context),
                     child: Text(
                       'Garder la plante',
                       style: TextStyle(color: Colors.black),
