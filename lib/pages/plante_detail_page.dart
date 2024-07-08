@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/pages/message_form_page.dart';
-import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:arosaje_flutter/services/garder_plante.dart';
 
 class PlanteDetailPage extends StatefulWidget {
@@ -14,14 +13,31 @@ class PlanteDetailPage extends StatefulWidget {
 
   @override
   _PlanteDetailPageState createState() => _PlanteDetailPageState();
-  
+}
+
+class _PlanteDetailPageState extends State<PlanteDetailPage> {
+  int? senderId;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSenderId();
+  }
+
+  Future<void> _initializeSenderId() async {
+    List? tokenData = await widget._tokenStorage.getToken();
+    setState(() {
+      senderId = int.tryParse(tokenData?[2] ?? '');
+    });
+  }
+
   Future<bool> _isUserLoggedIn() async {
-    List? token = await _tokenStorage.getToken();
+    List? token = await widget._tokenStorage.getToken();
     return token != null && token[0] != null;
   }
 
   Future<int?> _getUserId() async {
-    List? token = await _tokenStorage.getToken();
+    List? token = await widget._tokenStorage.getToken();
     return token != null && token[2] != null ? int.tryParse(token[2]) : null;
   }
 
@@ -47,7 +63,7 @@ class PlanteDetailPage extends StatefulWidget {
                   child: Text("Oui"),
                   onPressed: () async {
                     Navigator.of(context).pop(); // Fermer le dialogue
-                    bool success = await GarderPlanteService.garderPlante(plante.idPlante, userId);
+                    bool success = await GarderPlanteService.garderPlante(widget.plante.idPlante, userId);
                     if (success) {
                       Fluttertoast.showToast(
                         msg: "Vous avez gardé la plante avec succès",
@@ -97,25 +113,6 @@ class PlanteDetailPage extends StatefulWidget {
         fontSize: 16.0,
       );
     }
-  }
-}
-
-
-class _PlanteDetailPageState extends State<PlanteDetailPage> {
-  int? senderId;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeSenderId();
-  }
-
-  Future<void> _initializeSenderId() async {
-    TokenStorage tokenStorage = TokenStorage();
-    List? tokenData = await tokenStorage.getToken();
-    setState(() {
-      senderId = int.tryParse(tokenData?[2] ?? '');
-    });
   }
 
   void _showLoginRequiredDialog() {
