@@ -1,6 +1,5 @@
 import 'package:arosaje_flutter/services/send_message_service.dart';
 import 'package:flutter/material.dart';
-import 'package:arosaje_flutter/services/message_service.dart';
 
 class MessageForm extends StatefulWidget {
   final int senderId;

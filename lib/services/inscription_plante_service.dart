@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:arosaje_flutter/config.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
-import 'package:arosaje_flutter/services/photo_service.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:dio/dio.dart';
 
@@ -10,16 +9,11 @@ class InscriptionPlanteService {
 
   static Future<void> registerPlant(String name, String species, String description, String? base64Image, String? imageExtension, int cityId) async {
     try {
-      // Récupération du token
       List? tokenData = await TokenStorage().getToken();
       String? token = tokenData?[0];
       String? email = tokenData?[1];
       String? userIdString = tokenData?[2];
       int? userId = userIdString != null ? int.parse(userIdString) : null;
-
-      print('Token: $token'); // Ligne de débogage
-      print('Email: $email'); // Ligne de débogage
-      print('User ID: $userId'); // Ligne de débogage
 
       if (userId == null || token == null) {
         throw Exception('User not logged in');

@@ -1,11 +1,139 @@
+import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/pages/message_form_page.dart';
+import 'package:arosaje_flutter/services/garder_plante.dart';
 
-class PlanteDetailPage extends StatelessWidget {
+class PlanteDetailPage extends StatefulWidget {
   final Plante plante;
+  final TokenStorage _tokenStorage = TokenStorage();
 
   PlanteDetailPage({required this.plante});
+
+  @override
+  _PlanteDetailPageState createState() => _PlanteDetailPageState();
+}
+
+class _PlanteDetailPageState extends State<PlanteDetailPage> {
+  int? senderId;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSenderId();
+  }
+
+  Future<void> _initializeSenderId() async {
+    List? tokenData = await widget._tokenStorage.getToken();
+    setState(() {
+      senderId = int.tryParse(tokenData?[2] ?? '');
+    });
+  }
+
+  Future<bool> _isUserLoggedIn() async {
+    List? token = await widget._tokenStorage.getToken();
+    return token != null && token[0] != null;
+  }
+
+  Future<int?> _getUserId() async {
+    List? token = await widget._tokenStorage.getToken();
+    return token != null && token[2] != null ? int.tryParse(token[2]) : null;
+  }
+
+  void _handleGarderLaPlante(BuildContext context) async {
+    bool isLoggedIn = await _isUserLoggedIn();
+    if (isLoggedIn) {
+      int? userId = await _getUserId();
+      if (userId != null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Confirmation"),
+              content: Text("Êtes-vous sûr de vouloir garder cette plante ?"),
+              actions: [
+                TextButton(
+                  child: Text("Non"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text("Oui"),
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // Fermer le dialogue
+                    bool success = await GarderPlanteService.garderPlante(widget.plante.idPlante, userId);
+                    if (success) {
+                      Fluttertoast.showToast(
+                        msg: "Vous avez gardé la plante avec succès",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "Une erreur s'est produite, veuillez réessayer",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Impossible de récupérer l'ID de l'utilisateur",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "Vous devez être connecté",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  void _showLoginRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Connexion requise'),
+          content: Text('Vous devez vous connecter ou vous inscrire pour envoyer un message.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +170,7 @@ class PlanteDetailPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    plante.nom ?? "",
+                    widget.plante.nom ?? "",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -53,7 +181,7 @@ class PlanteDetailPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    plante.description ?? '',
+                    widget.plante.description ?? '',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -73,6 +201,7 @@ class PlanteDetailPage extends StatelessWidget {
                       // Logique pour garder la plante
                       
                     },
+                    onPressed: () => _handleGarderLaPlante(context),
                     child: Text(
                       'Garder la plante',
                       style: TextStyle(color: Colors.black),
@@ -87,19 +216,26 @@ class PlanteDetailPage extends StatelessWidget {
                   height: 60,
                   child: ElevatedButton(
                     onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: SingleChildScrollView(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8, // Définir la largeur du conteneur à 80% de la largeur de l'écran
-                                child: MessageForm(),
+                      if (senderId == null) {
+                        _showLoginRequiredDialog();
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: SingleChildScrollView(
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * 0.8,
+                                  child: MessageForm(
+                                    senderId: senderId!,
+                                    receiverId: widget.plante.idUtilisateur,
+                                  ),
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      );
+                            );
+                          },
+                        );
+                      }
                     },
                     child: Text(
                       'Envoyer un message\nau propriétaire',

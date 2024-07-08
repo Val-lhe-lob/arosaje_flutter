@@ -11,6 +11,7 @@ import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:arosaje_flutter/services/deconnexion_service.dart';
 import 'package:arosaje_flutter/services/user_information_service.dart';
 import 'package:arosaje_flutter/pages/map_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   runApp(MyApp());
@@ -76,12 +77,20 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showProfileInfo() {
-    if (userName != null && email != null) {
-      ProfileDialog().showUserInfoDialog(context, userName!, email!);
-    } else {
-      ProfileDialog().showLoginDialog(context);
-    }
+void _showProfileInfo() {
+  if (userName != null && email != null) {
+    ProfileDialog(onLogout: _handleLogout).showUserInfoDialog(context, userName!, email!);
+  } else {
+    ProfileDialog(onLogout: _handleLogout).showLoginDialog(context);
+  }
+}
+
+  void _handleLogout() {
+    setState(() {
+      userName = null;
+      email = null;
+      _selectedIndex = 0; // Optionnellement, réinitialiser à la page d'accueil
+    });
   }
 
   void _navigateToPlantesUtilisateur() {
@@ -110,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           PlanteOrVillePage(),
           InscriptionPlantePage(),
-          MapScreen(), // Include the MapScreen here
+          MapScreen(), // Inclure MapScreen ici
           VillesPage(),
           MessagesPage(),
         ],
@@ -268,6 +277,10 @@ class HomeContent extends StatelessWidget {
 }
 
 class ProfileDialog extends StatelessWidget {
+  final VoidCallback onLogout;
+
+  ProfileDialog({required this.onLogout});
+
   void showUserInfoDialog(BuildContext context, String userName, String email) {
     showDialog(
       context: context,
@@ -302,8 +315,15 @@ class ProfileDialog extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                await DeconnexionService().deconnexion();
+                await DeconnexionService().deconnexion(onLogout);
                 Navigator.of(context).pop();
+                Fluttertoast.showToast(
+                  msg: "Déconnexion réussie",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.green,
+                  textColor: Colors.white,
+                );
               },
               child: Text('Déconnexion'),
             ),

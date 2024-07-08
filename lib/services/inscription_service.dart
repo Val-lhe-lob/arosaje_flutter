@@ -6,22 +6,31 @@ import '../config.dart';
 class InscriptionService {
   Dio _dio = Dio();
 
+  Future<int?> _getUserIdByEmail(String email) async {
+    try {
+      final response = await _dio.get(
+        Config.apiUrl + '/api/Utilisateurs/idByMail/$email',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data as int;
+      } else {
+        throw Exception("Failed to retrieve user ID. Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print('Exception while retrieving user ID: $e');
+      return null;
+    }
+  }
+
   Future<bool> inscription(String nom, String prenom, int age, String email, String mdp, String repeatmdp) async {
     try {
       if (mdp != repeatmdp) {
         Fluttertoast.showToast(
           msg: "Les mots de passe ne correspondent pas.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-        return false;
-      }
-
-      if (mdp.length < 8) {
-        Fluttertoast.showToast(
-          msg: "Le mot de passe doit avoir au moins 8 caractères.",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.red,
@@ -45,12 +54,17 @@ class InscriptionService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Assuming the API response contains the new user's ID
-        int userId = response.data['id'];
-        print("Inscription réussie pour l'utilisateur avec l'ID: $userId");
+        print("Inscription réussie pour l'utilisateur: $email");
+
+        // Get the user ID using the email
+        int? userId = await _getUserIdByEmail(email);
+        print(userId);
+        if (userId == null) {
+          throw Exception("Failed to retrieve the user ID after registration.");
+        }
 
         final membreResponse = await _dio.post(
-          Config.apiUrl + '/api/Membres',
+          Config.apiUrl + '/api/Membres/CreateWithUserId',
           data: {
             "idUtilisateur": userId,
           },
@@ -66,8 +80,20 @@ class InscriptionService {
           throw Exception("Échec de l'insertion dans Membre. Code: ${membreResponse.statusCode}");
         }
       } else {
+        print("Échec de l'inscription. Code: ${response.statusCode}, Body: ${response.data}");
         throw Exception("Échec de l'inscription. Code: ${response.statusCode}");
       }
+    } on DioError catch (dioError) {
+      // Log the server response
+      print('DioError lors de l\'inscription: ${dioError.response?.data}');
+      Fluttertoast.showToast(
+        msg: "Erreur lors de l'inscription: ${dioError.response?.data['message'] ?? dioError.message}",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return false;
     } catch (e) {
       print('Exception lors de l\'inscription: $e');
       return false;

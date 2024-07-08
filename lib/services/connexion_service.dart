@@ -1,16 +1,20 @@
-
 import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/config.dart';
 import '../secure_local_storage_token.dart';
 
 class ConnexionService {
   final TokenStorage _tokenStorage = TokenStorage();
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(BaseOptions(
+    connectTimeout: 10000, // 10 seconds
+    receiveTimeout: 10000, // 10 seconds
+    sendTimeout: 10000,    // 10 seconds
+  ));
 
-  Future<bool> authenticate(String email, String mdp) async {print(mdp);
+  Future<bool> authenticate(String email, String mdp) async {
+    print(mdp);
     try {
-       final response = await _dio.post(
-          Config.apiUrl + '/api/Token',
+      final response = await _dio.post(
+        Config.apiUrl + '/api/Token',
         data: {
           "email": email,
           "mdp": mdp,
@@ -19,8 +23,6 @@ class ConnexionService {
           headers: {'Content-Type': 'application/json'},
         ),
       );
-
-      
 
       if (response.statusCode == 200) {
         final token = response.data;
