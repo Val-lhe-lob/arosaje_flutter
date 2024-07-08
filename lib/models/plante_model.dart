@@ -60,4 +60,9 @@ class Plante {
       'idUtilisateur1': idUtilisateur1,
     };
   }
+
+  @override
+  String toString() {
+    return 'Plante{idPlante: $idPlante, espece: $espece, description: $description, categorie: $categorie, etat: $etat, nom: $nom, idVille: $idVille, lon: $lon, lat: $lat, idPhoto: $idPhoto, idUtilisateur: $idUtilisateur, idUtilisateur1: $idUtilisateur1}';
+  }
 }

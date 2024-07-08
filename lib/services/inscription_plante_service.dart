@@ -67,7 +67,7 @@ class InscriptionPlanteService {
           'idVille': cityId,
           'idPhoto': photoId ?? 1,
           'idUtilisateur': userId,
-          'idUtilisateur1': userId,
+          'idUtilisateur1': '0',
         },
         options: Options(
           headers: {
