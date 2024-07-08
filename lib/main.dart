@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:arosaje_flutter/pages/conversation_page.dart';
 import 'package:arosaje_flutter/pages/plante_page.dart';
 import 'package:arosaje_flutter/pages/ville_page.dart';
-import 'package:arosaje_flutter/pages/message_page.dart';
 import 'package:arosaje_flutter/pages/connexion_page.dart';
 import 'package:arosaje_flutter/pages/inscription_page.dart';
 import 'package:arosaje_flutter/pages/inscription_plante_page.dart';
@@ -41,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   String? userName;
   String? email;
+  int? userId;
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {
             userName = utilisateur.nom;
             email = utilisateur.email;
+            userId = utilisateur.idUtilisateur;
           });
         }
       }
@@ -67,28 +69,40 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onItemTapped(int index) {
+    if (index == 4 && userId == null) {
+      Fluttertoast.showToast(
+        msg: "Vous devez vous connecter pour accéder aux messages",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ConnexionPage()),
+      );
+      return;
+    }
+
     setState(() {
       _selectedIndex = index;
     });
-    _pageController.animateToPage(
-      index,
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    _pageController.jumpToPage(index);
   }
 
-void _showProfileInfo() {
-  if (userName != null && email != null) {
-    ProfileDialog(onLogout: _handleLogout).showUserInfoDialog(context, userName!, email!);
-  } else {
-    ProfileDialog(onLogout: _handleLogout).showLoginDialog(context);
+  void _showProfileInfo() {
+    if (userName != null && email != null) {
+      ProfileDialog(onLogout: _handleLogout).showUserInfoDialog(context, userName!, email!);
+    } else {
+      ProfileDialog(onLogout: _handleLogout).showLoginDialog(context);
+    }
   }
-}
 
   void _handleLogout() {
     setState(() {
       userName = null;
       email = null;
+      userId = null;
       _selectedIndex = 0; // Optionnellement, réinitialiser à la page d'accueil
     });
   }
@@ -117,11 +131,10 @@ void _showProfileInfo() {
             onNavigateMap: () => _onItemTapped(3),
             onNavigateToPlantesUtilisateur: _navigateToPlantesUtilisateur,
           ),
-          PlanteOrVillePage(),
+          PlanteOrVillePage(),  // L'index ici doit correspondre à l'index de PlanteOrVillePage dans le PageView
           InscriptionPlantePage(),
           MapScreen(), // Inclure MapScreen ici
-          VillesPage(),
-          MessagesPage(),
+          ConversationPage(userId: userId ?? 0), // Passez userId si connecté, sinon 0
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

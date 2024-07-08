@@ -52,6 +52,7 @@ class MessagesService {
       var response = await _dio.post(
         '${Config.apiUrl}/api/EnvoyerRecevoirs/MessageSimple',
         queryParameters: {
+          'idUtilisateur': idUtilisateur1,
           'idUtilisateur1': idUtilisateur1,
           'idUtilisateur2': idUtilisateur2,
         },

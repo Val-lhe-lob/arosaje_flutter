@@ -1,11 +1,19 @@
+import 'package:arosaje_flutter/pages/message_list.dart';
 import 'package:flutter/material.dart';
-import 'package:arosaje_flutter/widgets/message_widget.dart';
 
-class MessagesPage extends StatelessWidget {
+class MessagePage extends StatelessWidget {
+  final int userId;
+  final int conversationUserId;
+
+  MessagePage({required this.userId, required this.conversationUserId});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: MessagesListWidget(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Messages with User $conversationUserId'),
+      ),
+      body: MessageList(userId: userId, conversationUserId: conversationUserId),
     );
   }
 }
