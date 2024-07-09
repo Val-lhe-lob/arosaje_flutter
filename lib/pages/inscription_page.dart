@@ -66,7 +66,6 @@ class _InscriptionPageState extends State<InscriptionPage> {
               "Vous avez le droit d'accéder à vos données personnelles, de les corriger, de les supprimer ou de limiter leur traitement. Vous pouvez exercer ces droits en nous contactant à l'adresse indiquée sur notre site.\n\n"
               "8. **Modifications de la politique de confidentialité**\n"
               "Nous pouvons mettre à jour cette politique de confidentialité de temps à autre. Nous vous informerons de toute modification en publiant la nouvelle politique sur notre site.\n\n"
-              "Pour plus d'informations, veuillez consulter notre politique de confidentialité complète sur notre site web."
             ),
           ),
           actions: [

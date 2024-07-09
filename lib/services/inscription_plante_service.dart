@@ -3,6 +3,7 @@ import 'package:arosaje_flutter/config.dart';
 import 'package:arosaje_flutter/models/ville_model.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:dio/dio.dart';
+import 'package:arosaje_flutter/services/photo_service.dart'; // Importez le PhotoService
 
 class InscriptionPlanteService {
   static Dio _dio = Dio();
@@ -48,14 +49,17 @@ class InscriptionPlanteService {
         );
 
         if (responsePhoto.statusCode == 201) {
-          photoId = responsePhoto.data['id'];
+          // Fetch the latest photo ID
+          final PhotoService photoService = PhotoService(baseUrl: Config.apiUrl);
+          final latestPhoto = await photoService.fetchLatestPhoto();
+          photoId = latestPhoto.idPhoto;
         } else {
           throw Exception('Échec de l\'enregistrement de la photo. Code: ${responsePhoto.statusCode}');
         }
       }
 
       final response = await _dio.post(
-        Config.apiUrl + '/api/plantes',
+        '${Config.apiUrl}/api/plantes',
         data: {
           'espece': species,
           'nom': name,
@@ -67,7 +71,7 @@ class InscriptionPlanteService {
           'idVille': cityId,
           'idPhoto': photoId,
           'idUtilisateur': userId,
-          'idUtilisateur1': '0',
+          'idUtilisateur1': userId,
         },
         options: Options(
           headers: {

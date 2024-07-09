@@ -64,6 +64,7 @@ class _MapScreenState extends State<MapScreen> {
                 center: _currentLocation,
                 zoom: 15.0,
               ),
+              
               layers: [
                 TileLayerOptions(
                   urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',

@@ -41,10 +41,10 @@ class MessageService {
         final envoyerRecevoirResponse = await _dio.post(
           Config.apiUrl + '/api/Envoyerrecevoirs/MessageSimple',
           data: {
-            "Id_Utilisateur": senderId,
-            "Id_Utilisateur_1": senderId,
-            "Id_Utilisateur_2": receiverId,
-            "Id_Message": messageId,
+            "IdUtilisateur": senderId,
+            "IdUtilisateur1": senderId,
+            "IdUtilisateur2": receiverId,
+            "IdMessage": messageId,
           },
           options: Options(
             headers: {
