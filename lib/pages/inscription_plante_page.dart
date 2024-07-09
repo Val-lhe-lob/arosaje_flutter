@@ -6,7 +6,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:convert';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class InscriptionPlantePage extends StatefulWidget {
   @override
@@ -47,29 +46,21 @@ class _InscriptionPlanteFormState extends State<InscriptionPlantePage> {
   }
 
   Future<void> _getImage() async {
-  try {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-
-    if (result != null && result.files.single.bytes != null) {
-      // Compress the image
-      var compressedImage = await FlutterImageCompress.compressWithList(
-        result.files.single.bytes!,
-        minWidth: 800,
-        minHeight: 600,
-        quality: 80,
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
       );
 
-      setState(() {
-        _base64Image = base64Encode(compressedImage);
-        _imageExtension = result.files.single.extension;
-      });
+      if (result != null && result.files.single.bytes != null) {
+        setState(() {
+          _base64Image = base64Encode(result.files.single.bytes!);
+          _imageExtension = result.files.single.extension;
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
     }
-  } catch (e) {
-    print('Error picking image: $e');
   }
-}
 
   Future<void> _getCurrentLocation() async {
     var locationData = await _locationService.getLocation();
@@ -101,20 +92,24 @@ class _InscriptionPlanteFormState extends State<InscriptionPlantePage> {
     print('idPhoto: $_base64Image');
     print('Image Extension: $_imageExtension');
 
-    await InscriptionPlanteService.registerPlant(
-      _nameController.text,
-      _speciesController.text,
-      _descriptionController.text,
-      _base64Image,
-      _imageExtension,
-      _selectedCityId!,
-      _selectedCategory!,
-      _currentLocation?.latitude.toString() ?? '',
-      _currentLocation?.longitude.toString() ?? '',
-    );
-
-    print('Plant registered successfully');
-    _resetForm();
+    try {
+      await InscriptionPlanteService.registerPlant(
+        _nameController.text,
+        _speciesController.text,
+        _descriptionController.text,
+        _base64Image,
+        _imageExtension,
+        _selectedCityId!,
+        _selectedCategory!,
+        _currentLocation?.latitude.toString() ?? '',
+        _currentLocation?.longitude.toString() ?? '',
+      );
+      print('Plant registered successfully');
+      _resetForm();
+    } catch (e) {
+      print('Error registering plant: $e');
+      _showErrorAlertDialog(e.toString());
+    }
   }
 
   void _showLoginAlertDialog() {
@@ -130,6 +125,26 @@ class _InscriptionPlanteFormState extends State<InscriptionPlantePage> {
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pushReplacementNamed('/home');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showErrorAlertDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Erreur"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -154,83 +169,90 @@ class _InscriptionPlanteFormState extends State<InscriptionPlantePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          InkWell(
-            onTap: _getImage,
-            child: _base64Image == null
-                ? Container(
-                    color: Colors.grey,
-                    height: 150,
-                    child: Icon(Icons.add_a_photo, size: 50, color: Colors.white),
-                  )
-                : Image.memory(base64Decode(_base64Image!), height: 150, fit: BoxFit.cover),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Inscription de Plante"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              InkWell(
+                onTap: _getImage,
+                child: _base64Image == null
+                    ? Container(
+                        color: Colors.grey,
+                        height: 150,
+                        child: Icon(Icons.add_a_photo, size: 50, color: Colors.white),
+                      )
+                    : Image.memory(base64Decode(_base64Image!), height: 150, fit: BoxFit.cover),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Nom de la plante'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _speciesController,
+                decoration: InputDecoration(labelText: 'Espèce de la plante'),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description de la plante'),
+                maxLines: null,
+              ),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField<int>(
+                decoration: InputDecoration(labelText: 'Ville'),
+                items: _villes.map((ville) {
+                  return DropdownMenuItem<int>(
+                    value: ville.idVille,
+                    child: Text(ville.nom),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCityId = value;
+                  });
+                },
+                value: _selectedCityId,
+              ),
+              SizedBox(height: 16.0),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: 'Catégorie'),
+                items: _categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategory = value;
+                  });
+                },
+                value: _selectedCategory,
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _getCurrentLocation,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _locationSaved ? Colors.green : Colors.red,
+                ),
+                child: Text('Enregistrer la position'),
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _registerPlant,
+                child: Text('Enregistrer'),
+              ),
+            ],
           ),
-          SizedBox(height: 16.0),
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Nom de la plante'),
-          ),
-          SizedBox(height: 16.0),
-          TextFormField(
-            controller: _speciesController,
-            decoration: InputDecoration(labelText: 'Espèce de la plante'),
-          ),
-          SizedBox(height: 16.0),
-          TextFormField(
-            controller: _descriptionController,
-            decoration: InputDecoration(labelText: 'Description de la plante'),
-            maxLines: null,
-          ),
-          SizedBox(height: 16.0),
-          DropdownButtonFormField<int>(
-            decoration: InputDecoration(labelText: 'Ville'),
-            items: _villes.map((ville) {
-              return DropdownMenuItem<int>(
-                value: ville.idVille,
-                child: Text(ville.nom),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedCityId = value;
-              });
-            },
-            value: _selectedCityId,
-          ),
-          SizedBox(height: 16.0),
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(labelText: 'Catégorie'),
-            items: _categories.map((category) {
-              return DropdownMenuItem<String>(
-                value: category,
-                child: Text(category),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedCategory = value;
-              });
-            },
-            value: _selectedCategory,
-          ),
-          SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: _getCurrentLocation,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _locationSaved ? Colors.green : Colors.red,
-            ),
-            child: Text('Enregistrer la position'),
-          ),
-          SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: _registerPlant,
-            child: Text('Enregistrer'),
-          ),
-        ],
+        ),
       ),
     );
   }

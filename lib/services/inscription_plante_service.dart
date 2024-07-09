@@ -29,7 +29,7 @@ class InscriptionPlanteService {
         throw Exception('User not logged in');
       }
 
-      int? photoId;
+      int photoId = 0; // Default photo ID if no image is provided
       if (base64Image != null && imageExtension != null) {
         Map<String, dynamic> imageData = {
           'image': base64Image,
@@ -65,7 +65,7 @@ class InscriptionPlanteService {
           'lon': lon,
           'lat': lat,
           'idVille': cityId,
-          'idPhoto': photoId ?? 1,
+          'idPhoto': photoId,
           'idUtilisateur': userId,
           'idUtilisateur1': '0',
         },
@@ -84,8 +84,9 @@ class InscriptionPlanteService {
       }
     } catch (e) {
       if (e is DioError) {
-        print('Exception lors de l\'inscription de la plante: ${e.response?.statusCode}');
-        print('DioError response data: ${e.response?.data}');
+        print('DioError type: ${e.type}');
+        print('DioError message: ${e.message}');
+        print('DioError response: ${e.response?.data}');
       } else {
         print('Exception lors de l\'inscription de la plante: $e');
       }
