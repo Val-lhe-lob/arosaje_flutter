@@ -39,6 +39,17 @@ class _UserPlantesWidgetState extends State<UserPlantesWidget> {
     }
   }
 
+  void _deletePlante(int planteId) async {
+    try {
+      await PlantesService.deletePlante(planteId);
+      setState(() {
+        _userPlantesFuture = PlantesService.getPlantesByUserId(_userId!);
+      });
+    } catch (error) {
+      print('Error deleting plant: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Plante>>(
@@ -61,11 +72,19 @@ class _UserPlantesWidgetState extends State<UserPlantesWidget> {
             itemBuilder: (context, index) {
               final plante = plantes[index];
               return Card(
-                color: Color(0xFFFF6347), // Rouge coquelicot
+                color: plante.idUtilisateur == _userId ? Colors.green : Colors.yellow,
                 margin: EdgeInsets.all(10.0),
                 child: ListTile(
                   title: Text(plante.nom),
                   subtitle: Text(plante.description),
+                  trailing: plante.idUtilisateur == _userId
+                      ? IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            _deletePlante(plante.idPlante);
+                          },
+                        )
+                      : null,
                 ),
               );
             },

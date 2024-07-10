@@ -1,22 +1,31 @@
+import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:dio/dio.dart';
 import '../config.dart';
 
 class GarderPlanteService {
   static Dio _dio = Dio()..interceptors.add(LogInterceptor(responseBody: true));
 
-  static Future<bool> garderPlante(int planteId, int userId) async {
+  static Future<bool> garderPlante(int planteId, int newUserId) async {
     try {
+        
+    
+
       var response = await _dio.put(
-        '${Config.apiUrl}/api/Plantes/$planteId',
+        '${Config.apiUrl}/api/Plantes/UpdateIdUtilisateur1/$planteId',
         options: Options(
           headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
         ),
         data: {
-          'Id_Utilisateur_1': userId,
+          
+          'IdPlante': planteId,
+          'IdUtilisateur1': newUserId,
+
         },
       );
 
-      if (response.statusCode == 200) {
+  
+
+     if (response.statusCode == 204) {
         return true;
       } else {
         throw Exception('Échec de mise à jour des données: ${response.statusCode}');

@@ -19,7 +19,7 @@ class PlantesUtilisateurPage extends StatelessWidget {
                   },
                 ),
                 Text(
-                  "Mes Plantes Inscrites",
+                  "Mes Plantes",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

@@ -60,8 +60,8 @@ class PlantesService {
         print('getPlantesByUserId: Parsed plantes list: $plantesList');
 
         var filteredPlantesList = plantesList.where((plante) {
-          print('getPlantesByUserId: Checking plante idUtilisateur ${plante.idUtilisateur} against user ID $userId');
-          return plante.idUtilisateur == userId;
+          print('getPlantesByUserId: Checking plante idUtilisateur1 ${plante.idUtilisateur} against user ID $userId');
+          return plante.idUtilisateur1 == userId;
         }).toList();
         print('getPlantesByUserId: Filtered plantes list for user ID $userId: $filteredPlantesList');
 
@@ -72,6 +72,19 @@ class PlantesService {
     } catch (error) {
       print('getPlantesByUserId: Error occurred: $error');
       throw Exception('Erreur lors de la requête HTTP: $error');
+    }
+  }
+
+
+    // Méthode pour supprimer une plante par ID
+  static Future<void> deletePlante(int planteId) async {
+    try {
+      final response = await _dio.delete( Config.apiUrl + '/api/Plantes/$planteId');
+      if (response.statusCode != 204) {
+        throw Exception('Failed to delete plant');
+      }
+    } catch (error) {
+      throw Exception('Failed to delete plant: $error');
     }
   }
 }
