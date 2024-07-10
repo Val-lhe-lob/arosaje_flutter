@@ -54,11 +54,11 @@ class _MyHomePageState extends State<MyHomePage> {
       if (tokenData != null && tokenData[0] != null && tokenData[1] != null) {
         Utilisateur? utilisateur = await UserInformationService().getAuthenticatedData(tokenData[0], tokenData[1]);
         await TokenStorage().storeId(utilisateur!.idUtilisateur);
-          setState(() {
-            userName = utilisateur.nom;
-            email = utilisateur.email;
-            userId = utilisateur.idUtilisateur;
-          });
+        setState(() {
+          userName = utilisateur.nom;
+          email = utilisateur.email;
+          userId = utilisateur.idUtilisateur;
+        });
       }
     } catch (e) {
       print('Error fetching profile data: $e');
@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onNavigateMap: () => _onItemTapped(3),
             onNavigateToPlantesUtilisateur: _navigateToPlantesUtilisateur,
           ),
-          PlanteOrVillePage(),  // L'index ici doit correspondre à l'index de PlanteOrVillePage dans le PageView
+          PlanteOrVillePage(), // L'index ici doit correspondre à l'index de PlanteOrVillePage dans le PageView
           InscriptionPlantePage(),
           MapScreen(), // Inclure MapScreen ici
           ConversationsPage(userId: userId ?? 0), // Passez userId si connecté, sinon 0

@@ -37,7 +37,7 @@ class ConversationMessagesPage extends StatelessWidget {
                 return ListTile(
                   title: Text(message.contenu),
                   subtitle: Text(message.dateMessage.toString()),
-                  leading: message.idUtilisateur == userId ? Icon(Icons.send) : Icon(Icons.not_accessible ),
+                  // leading: message.idUtilisateur == userId ? Icon(Icons.send) : Icon(Icons.not_accessible ),
                 );
               },
             );
