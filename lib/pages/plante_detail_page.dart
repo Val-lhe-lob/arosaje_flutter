@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
 import 'package:arosaje_flutter/widgets/send_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/services/garder_plante.dart';
+import 'package:arosaje_flutter/services/photo_service.dart';
+import 'package:arosaje_flutter/models/photo_model.dart';
 
 class PlanteDetailPage extends StatefulWidget {
   final Plante plante;
@@ -17,17 +20,30 @@ class PlanteDetailPage extends StatefulWidget {
 
 class _PlanteDetailPageState extends State<PlanteDetailPage> {
   int? senderId;
+  Photo? _photo;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _initializeSenderId();
+    _fetchPhoto();
   }
 
   Future<void> _initializeSenderId() async {
     List? tokenData = await widget._tokenStorage.getToken();
     setState(() {
       senderId = int.tryParse(tokenData?[2] ?? '');
+    });
+  }
+
+  Future<void> _fetchPhoto() async {
+    PhotoService photoService = PhotoService();
+    Photo? photo = await photoService.getPhoto(widget.plante.idPhoto!);
+
+    setState(() {
+      _photo = photo;
+      _isLoading = false;
     });
   }
 
@@ -138,117 +154,132 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                Text(
-                  "Détails de la plante",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(16),
-            color: Colors.yellow,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    widget.plante.nom,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    widget.plante.description,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () => _handleGarderLaPlante(context),
-                    child: Text(
-                      'Garder la plante',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF55FFEB),
-                      maximumSize: Size(150, double.infinity),
-                    ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      Text(
+                        "Détails de la plante",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Container(
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (senderId == null) {
-                        _showLoginRequiredDialog();
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: SingleChildScrollView(
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.8,
-                                  child: MessageForm(
-                                    senderId: senderId!,
-                                    receiverId: widget.plante.idUtilisateur,
-                                  ),
-                                ),
-                              ),
-                            );
+                  padding: EdgeInsets.all(16),
+                  color: Colors.yellow,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Affichage de l'image décodée à partir de la variable _photo.image
+                      if (_photo != null)
+                        Container(
+                          height: 200,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            image: DecorationImage(
+                              image: MemoryImage(base64Decode(_photo!.image!)),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          widget.plante.nom,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          widget.plante.description,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: 60,
+                        child: ElevatedButton(
+                          onPressed: () => _handleGarderLaPlante(context),
+                          child: Text(
+                            'Garder la plante',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF55FFEB),
+                            maximumSize: Size(150, double.infinity),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 60,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (senderId == null) {
+                              _showLoginRequiredDialog();
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: SingleChildScrollView(
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width * 0.8,
+                                        child: MessageForm(
+                                          senderId: senderId!,
+                                          receiverId: widget.plante.idUtilisateur,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
                           },
-                        );
-                      }
-                    },
-                    child: Text(
-                      'Envoyer un message\nau propriétaire',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF81FF55),
-                      fixedSize: Size(150, 60),
-                    ),
+                          child: Text(
+                            'Envoyer un message\nau propriétaire',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF81FF55),
+                            fixedSize: Size(150, 60),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

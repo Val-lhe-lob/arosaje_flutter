@@ -49,7 +49,7 @@ class InscriptionPlanteService {
 
         if (responsePhoto.statusCode == 201) {
           // Fetch the latest photo ID
-          final PhotoService photoService = PhotoService(baseUrl: Config.apiUrl);
+          final PhotoService photoService = PhotoService();
           final latestPhoto = await photoService.fetchLatestPhoto();
           photoId = latestPhoto.idPhoto;
         } else {

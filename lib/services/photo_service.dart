@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:arosaje_flutter/config.dart';
 import 'package:arosaje_flutter/models/photo_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 class PhotoService {
-  final String baseUrl;
+  
+     static Dio _dio = Dio()..interceptors.add(LogInterceptor(responseBody: true));
 
-  PhotoService({required this.baseUrl});
-
+  
   Future<List<Photo>> fetchPhotos() async {
     final response = await http.get(Uri.parse(Config.apiUrl+'/api/photos'));
 
@@ -28,6 +29,23 @@ class PhotoService {
       return photos.last; // Return the latest photo
     } else {
       throw Exception('No photos found');
+    }
+  }
+
+  Future<Photo?> getPhoto(int id) async {
+    try {
+      final response = await _dio.get(Config.apiUrl + '/api/photos/$id',);
+
+       final data = response.data;
+        if (data is Map<String, dynamic>) {
+          return Photo.fromJson(data);
+        } else {
+          print('Unexpected response format: $data');
+          return null;
+        }
+    } catch (e) {
+      print('Error: $e');
+      return null;
     }
   }
 }

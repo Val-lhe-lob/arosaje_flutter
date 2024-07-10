@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:arosaje_flutter/services/location_service.dart';
+import 'package:location/location.dart';
+import 'package:arosaje_flutter/services/plante_service.dart';
+import 'package:arosaje_flutter/models/plante_model.dart';
+import 'package:arosaje_flutter/pages/plante_detail_page.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -9,37 +12,86 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  LatLng _defaultLocation = LatLng(45.764043, 4.835659); // Centre par défaut (Lyon)
   LatLng? _currentLocation;
   final MapController _mapController = MapController();
-  final LocationService _locationService = LocationService();
 
-  final List<LatLng> _plantesLocations = [
-    LatLng(45.739197, 4.878883), // Chez Nathan
-    LatLng(45.773518, 4.799943), // Chez Etienne
-    LatLng(45.771899, 4.853012), // Chez Kilian
-  ];
+  // Liste dynamique des emplacements des plantes
+  List<Plante> _plantes = [];
+  List<LatLng> _plantesLocations = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getCurrentLocation();
-    });
+    _getCurrentLocation();
+    _loadPlantesLocations(); // Charger les emplacements des plantes
   }
 
   Future<void> _getCurrentLocation() async {
-    var locationData = await _locationService.getLocation();
-    if (locationData != null) {
-      setState(() {
-        _currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
+    Location location = Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    // Check if service is enabled
+    _serviceEnabled = await location.serviceEnabled();
+    print('_serviceEnabled: $_serviceEnabled');
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      print('Requested service, _serviceEnabled: $_serviceEnabled');
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    // Check if permission is granted
+    _permissionGranted = await location.hasPermission();
+    print('_permissionGranted: $_permissionGranted');
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      print('Requested permission, _permissionGranted: $_permissionGranted');
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    print('_locationData: $_locationData');
+
+    setState(() {
+      if (_locationData.latitude != null && _locationData.longitude != null) {
+        _currentLocation = LatLng(_locationData.latitude!, _locationData.longitude!);
+        print('_currentLocation: $_currentLocation');
         _mapController.move(_currentLocation!, 15.0);
+      } else {
+        print('Location data is null');
+      }
+    });
+  }
+
+  Future<void> _loadPlantesLocations() async {
+    try {
+      List<Plante> plantes = await PlantesService.getPlantes();
+      setState(() {
+        _plantes = plantes;
+        _plantesLocations = plantes.map((plante) => LatLng(double.parse(plante.lat), double.parse(plante.lon))).toList();
       });
+    } catch (e) {
+      print('Error loading plantes locations: $e');
     }
   }
 
   void _fetchLocation() async {
     await _getCurrentLocation();
+  }
+
+  void _onPlanteTap(Plante plante) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlanteDetailPage(plante: plante),
+      ),
+    );
   }
 
   @override
@@ -54,7 +106,7 @@ class _MapScreenState extends State<MapScreen> {
             child: FlutterMap(
               mapController: _mapController,
               options: MapOptions(
-                center: _currentLocation ?? _defaultLocation,
+                center: _currentLocation ?? LatLng(45.764043, 4.835659), // Centre par défaut (Lyon)
                 zoom: 15.0,
               ),
               children: [
@@ -77,20 +129,22 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                         ),
                       ),
-                    ..._plantesLocations.map(
-                      (location) => Marker(
+                    for (var i = 0; i < _plantes.length; i++)
+                      Marker(
                         width: 80.0,
                         height: 80.0,
-                        point: location,
-                        builder: (ctx) => Container(
-                          child: Icon(
-                            Icons.location_on,
-                            color: Color.fromARGB(255, 5, 155, 37),
-                            size: 40,
+                        point: _plantesLocations[i],
+                        builder: (ctx) => GestureDetector(
+                          onTap: () => _onPlanteTap(_plantes[i]),
+                          child: Container(
+                            child: Icon(
+                              Icons.local_florist,
+                              color: Color.fromARGB(255, 5, 155, 37),
+                              size: 40,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ],
