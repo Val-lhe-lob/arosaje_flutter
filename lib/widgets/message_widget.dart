@@ -26,8 +26,8 @@ class MessagesListWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 child: ListTile(
-                  title: Text(Message.contenu ?? ''),
-                  subtitle: Text(Message.dateMessage.toString() ?? ''),
+                  title: Text(Message.contenu),
+                  subtitle: Text(Message.dateMessage.toString()),
                   trailing: ElevatedButton(
                     onPressed: () {
                       // faire la logique

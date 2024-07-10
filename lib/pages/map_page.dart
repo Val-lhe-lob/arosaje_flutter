@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
 import 'package:arosaje_flutter/services/location_service.dart';
 
 class MapScreen extends StatefulWidget {
@@ -24,11 +23,18 @@ class _MapScreenState extends State<MapScreen> {
     var locationData = await _locationService.getLocation();
     if (locationData != null) {
       setState(() {
-        _currentLocation = LatLng(locationData.latitude!, locationData.longitude!);
+        _currentLocation =
+            LatLng(locationData.latitude!, locationData.longitude!);
         _mapController.move(_currentLocation!, 15.0);
       });
     }
   }
+
+  final List<LatLng> planteslocation = [
+    LatLng(45.739197, 4.878883), //Chez Nathan
+    LatLng(45.773518, 4.799943), //Chez Etienne
+    LatLng(45.771899, 4.853012), //Kilian
+  ];
 
   void _fetchLocation() async {
     await _getCurrentLocation();
@@ -53,7 +59,8 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                     children: [
                       TileLayer(
-                        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        urlTemplate:
+                            'https://{s}.tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png',
                         subdomains: ['a', 'b', 'c'],
                       ),
                       MarkerLayer(
@@ -65,11 +72,27 @@ class _MapScreenState extends State<MapScreen> {
                             builder: (ctx) => Container(
                               child: Icon(
                                 Icons.location_on,
-                                color: Colors.red,
+                                color: const Color.fromARGB(255, 221, 20, 5),
                                 size: 40,
                               ),
                             ),
                           ),
+                          ...planteslocation
+                              .map(
+                                (location) => Marker(
+                                  width: 80.0,
+                                  height: 80.0,
+                                  point: location,
+                                  builder: (ctx) => Container(
+                                    child: Icon(
+                                      Icons.location_on,
+                                      color: Color.fromARGB(255, 5, 155, 37),
+                                      size: 40,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
                         ],
                       ),
                     ],

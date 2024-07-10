@@ -31,7 +31,7 @@ class PlantesListWidget extends StatelessWidget {
                 ),
                 child: ListTile(
                   title: Text(plante.nom),
-                  subtitle: Text(plante.description ?? ''),
+                  subtitle: Text(plante.description),
                   trailing: ElevatedButton(
                     onPressed: () {
                       Navigator.push(

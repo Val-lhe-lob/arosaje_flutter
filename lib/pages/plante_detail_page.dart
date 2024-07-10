@@ -1,8 +1,8 @@
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/widgets/send_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
-import 'package:arosaje_flutter/pages/message_form_page.dart';
 import 'package:arosaje_flutter/services/garder_plante.dart';
 
 class PlanteDetailPage extends StatefulWidget {
@@ -170,7 +170,7 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    widget.plante.nom ?? "",
+                    widget.plante.nom,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class _PlanteDetailPageState extends State<PlanteDetailPage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    widget.plante.description ?? '',
+                    widget.plante.description,
                     style: TextStyle(fontSize: 16),
                   ),
                 ),

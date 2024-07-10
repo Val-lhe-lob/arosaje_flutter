@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../models/conversation.dart' as conversation;
+import '../models/conversation_model.dart' as conversation;
 import '../models/message_model.dart' as message;
 import '../config.dart';
 
@@ -35,30 +35,6 @@ class MessageService {
         print('Exception occurred: $e');
       }
       throw Exception('Failed to load conversations');
-    }
-  }
-
-  Future<void> sendLastMessage(int idUtilisateur1, int idUtilisateur2, int idMessage) async {
-    try {
-      print('Sending request to: ${Config.apiUrl}/api/EnvoyerRecevoirs/MessageSimple with parameters: idUtilisateur1=$idUtilisateur1, idUtilisateur2=$idUtilisateur2, idMessage=$idMessage');
-      var response = await _dio.post(
-        '${Config.apiUrl}/api/EnvoyerRecevoirs/MessageSimple',
-        data: {
-          'idUtilisateur': idUtilisateur1,
-          'idUtilisateur1': idUtilisateur1,
-          'idUtilisateur2': idUtilisateur2,
-          'idMessage': idMessage,
-        },
-      );
-      print('Response status code: ${response.statusCode}');
-      print('Response data: ${response.data}');
-
-      if (response.statusCode != 201) {
-        throw Exception('Échec de l\'envoi du message');
-      }
-    } catch (error) {
-      print('Erreur lors de la requête HTTP: $error');
-      throw Exception('Erreur lors de la requête HTTP: $error');
     }
   }
 

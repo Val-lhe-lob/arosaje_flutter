@@ -1,4 +1,5 @@
-import 'package:arosaje_flutter/services/send_message_service.dart';
+import 'package:arosaje_flutter/services/message_service.dart';
+
 import 'package:flutter/material.dart';
 
 class MessageForm extends StatefulWidget {
@@ -14,23 +15,22 @@ class MessageForm extends StatefulWidget {
 class _MessageFormState extends State<MessageForm> {
   final _formKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
-  final MessageService _messageService = MessageService();
 
   Future<void> _sendMessage() async {
     if (_formKey.currentState?.validate() ?? false) {
-      bool success = await _messageService.sendMessage(
-        widget.senderId,
-        widget.receiverId,
-        _messageController.text,
-      );
-      if (success) {
+      try {
+        await MessagesService.sendMessage(
+          widget.senderId,
+          widget.receiverId,
+          _messageController.text,
+        );
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Message sent successfully!')),
         );
-      } else {
+      } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send message')),
+          SnackBar(content: Text('Failed to send message: $error')),
         );
       }
     }

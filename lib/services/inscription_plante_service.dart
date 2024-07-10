@@ -22,7 +22,6 @@ class InscriptionPlanteService {
     try {
       List? tokenData = await TokenStorage().getToken();
       String? token = tokenData?[0];
-      String? email = tokenData?[1];
       String? userIdString = tokenData?[2];
       int? userId = userIdString != null ? int.parse(userIdString) : null;
 

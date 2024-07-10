@@ -1,10 +1,10 @@
+import 'package:arosaje_flutter/widgets/conversation_widget.dart';
 import 'package:flutter/material.dart';
-import '../widgets/conversation_list_widget.dart';
 
-class ConversationPage extends StatelessWidget {
+class ConversationsPage extends StatelessWidget {
   final int userId;
 
-  ConversationPage({required this.userId});
+  ConversationsPage({required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class ConversationPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Conversations'),
       ),
-      body: ConversationList(userId: userId),
+      body: ConversationsWidget(userId: userId),
     );
   }
 }
