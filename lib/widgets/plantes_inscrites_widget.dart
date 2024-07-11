@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/models/plante_model.dart';
 import 'package:arosaje_flutter/services/plante_service.dart';
 import 'package:arosaje_flutter/secure_local_storage_token.dart';
+import 'package:arosaje_flutter/services/garder_plante.dart';
 
 class UserPlantesWidget extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class UserPlantesWidget extends StatefulWidget {
 
 class _UserPlantesWidgetState extends State<UserPlantesWidget> {
   Future<List<Plante>>? _userPlantesFuture;
+   Future<List<Plante>>? _userPlantesListe;
   int? _userId;
 
   @override
@@ -44,12 +46,24 @@ class _UserPlantesWidgetState extends State<UserPlantesWidget> {
       await PlantesService.deletePlante(planteId);
       setState(() {
         _userPlantesFuture = PlantesService.getPlantesByUserId(_userId!);
+          _userPlantesListe = PlantesService.getPlantes();
       });
     } catch (error) {
       print('Error deleting plant: $error');
     }
   }
 
+   void garder_plante(int planteId, int proprio) async {
+    try {
+      await GarderPlanteService.garderPlante(planteId,proprio);
+      setState(() {
+       _userPlantesFuture = PlantesService.getPlantesByUserId(_userId!);
+          _userPlantesListe = PlantesService.getPlantes();
+      });
+    } catch (error) {
+      print('Error deleting plant: $error');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Plante>>(
@@ -77,14 +91,19 @@ class _UserPlantesWidgetState extends State<UserPlantesWidget> {
                 child: ListTile(
                   title: Text(plante.nom),
                   subtitle: Text(plante.description),
-                  trailing: plante.idUtilisateur == _userId
-                      ? IconButton(
-                          icon: Icon(Icons.delete),
+                  trailing: IconButton(
+                         icon: Icon(plante.idUtilisateur == _userId ? Icons.delete : Icons.sync_alt),
                           onPressed: () {
+
+                              if (plante.idUtilisateur == _userId) {
                             _deletePlante(plante.idPlante);
+                              }else {
+                                  garder_plante(plante.idPlante, plante.idUtilisateur);
+
+                              }
                           },
                         )
-                      : null,
+              
                 ),
               );
             },

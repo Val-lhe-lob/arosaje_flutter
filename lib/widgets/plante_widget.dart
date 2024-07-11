@@ -16,7 +16,7 @@ class PlantesListWidget extends StatelessWidget {
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(child: Text('Aucune donnée disponible'));
         } else {
-          final plantes = snapshot.data!;
+           final plantes = snapshot.data!.where((plante) => plante.idUtilisateur == plante.idUtilisateur1).toList();
           print('Plantes: $plantes'); // Vérifier les données des plantes
           return ListView.builder(
             itemCount: plantes.length,
