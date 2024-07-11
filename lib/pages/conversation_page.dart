@@ -11,6 +11,21 @@ class ConversationsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Conversations'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              // Logic to refresh the conversations
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation1, animation2) => ConversationsPage(userId: userId),
+                  transitionDuration: Duration.zero,
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: ConversationsWidget(userId: userId),
     );

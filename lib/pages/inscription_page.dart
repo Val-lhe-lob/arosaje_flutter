@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:arosaje_flutter/services/inscription_service.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:arosaje_flutter/main.dart';
+import 'package:arosaje_flutter/pages/connexion_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class InscriptionPage extends StatefulWidget {
@@ -79,6 +79,19 @@ class _InscriptionPageState extends State<InscriptionPage> {
         );
       },
     );
+  }
+
+  bool _validatePassword(String password) {
+    final containsUppercase = password.contains(RegExp(r'[A-Z]'));
+    final containsSpecialCharacter = password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+    return containsUppercase && containsSpecialCharacter;
+  }
+
+  bool _validateEmail(String email) {
+    final emailRegex = RegExp(
+        r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+');
+    return emailRegex.hasMatch(email);
   }
 
   @override
@@ -184,7 +197,18 @@ class _InscriptionPageState extends State<InscriptionPage> {
                   if (!_isConsentChecked) {
                     Fluttertoast.showToast(
                       msg: "Vous devez accepter la politique de confidentialité.",
-                      toastLength: Toast.LENGTH_SHORT,
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                    return;
+                  }
+
+                  if (!_validateEmail(_emailController.text)) {
+                    Fluttertoast.showToast(
+                      msg: "Veuillez entrer une adresse email valide.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
                       gravity: ToastGravity.BOTTOM,
                       backgroundColor: Colors.red,
                       textColor: Colors.white,
@@ -195,7 +219,18 @@ class _InscriptionPageState extends State<InscriptionPage> {
                   if (_passwordController.text.length < 8) {
                     Fluttertoast.showToast(
                       msg: "Le mot de passe doit avoir au moins 8 caractères.",
-                      toastLength: Toast.LENGTH_SHORT,
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                    return;
+                  }
+
+                  if (!_validatePassword(_passwordController.text)) {
+                    Fluttertoast.showToast(
+                      msg: "Le mot de passe doit contenir au moins une majuscule et un caractère spécial.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
                       gravity: ToastGravity.BOTTOM,
                       backgroundColor: Colors.red,
                       textColor: Colors.white,
@@ -206,7 +241,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                   if (_passwordController.text != _repeatPasswordController.text) {
                     Fluttertoast.showToast(
                       msg: "Les mots de passe ne correspondent pas.",
-                      toastLength: Toast.LENGTH_SHORT,
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
                       gravity: ToastGravity.BOTTOM,
                       backgroundColor: Colors.red,
                       textColor: Colors.white,
@@ -223,7 +258,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                   String hashedPasswordRepeat = digestRepeat.toString();
 
                   InscriptionService inscriptionService = InscriptionService();
-                  final success = await inscriptionService.inscription(
+                  final result = await inscriptionService.inscription(
                     _nomController.text,
                     _prenomController.text,
                     int.parse(_ageController.text),
@@ -231,13 +266,51 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     hashedPassword,
                     hashedPasswordRepeat,
                   );
-                  if (success) {
+
+                  if (result == 'success') {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                      MaterialPageRoute(builder: (context) => ConnexionPage()), // Rediriger vers la page de connexion
+                    );
+                    Fluttertoast.showToast(
+                      msg: "Inscription réussie. Veuillez vous connecter.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.green,
+                      textColor: Colors.white,
+                    );
+                  } else if (result == 'email_exists') {
+                    Fluttertoast.showToast(
+                      msg: "Email existant dans notre base de données.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                  } else if (result == 'username_exists') {
+                    Fluttertoast.showToast(
+                      msg: "Nom d'utilisateur existant dans notre base de données.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
+                  } else if (result == 'password_mismatch') {
+                    Fluttertoast.showToast(
+                      msg: "Les mots de passe ne correspondent pas.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
                     );
                   } else {
-                    print("Inscription failed");
+                    Fluttertoast.showToast(
+                      msg: "Erreur lors de l'inscription. Veuillez réessayer.",
+                      toastLength: Toast.LENGTH_LONG, // Durée de 5 secondes
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                    );
                   }
                 },
                 child: Text('S\'inscrire'),

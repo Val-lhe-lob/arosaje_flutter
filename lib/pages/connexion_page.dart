@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:arosaje_flutter/services/connexion_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:arosaje_flutter/main.dart';
+import 'package:arosaje_flutter/pages/inscription_page.dart';
 
 class ConnexionPage extends StatefulWidget {
   @override
@@ -88,11 +89,10 @@ class _ConnexionPageState extends State<ConnexionPage> {
                   );
                 } else {
                   Fluttertoast.showToast(
-                    msg:
-                        "La connexion s'est mal passée, veuillez réessayer s'il vous plaît",
-                    toastLength: Toast.LENGTH_SHORT,
+                    msg: "La connexion s'est mal passée, veuillez réessayer s'il vous plaît",
+                    toastLength: Toast.LENGTH_LONG,
                     gravity: ToastGravity.BOTTOM,
-                    timeInSecForIosWeb: 1,
+                    timeInSecForIosWeb: 5,
                     backgroundColor: Colors.red,
                     textColor: Colors.white,
                     fontSize: 16.0,
@@ -100,6 +100,30 @@ class _ConnexionPageState extends State<ConnexionPage> {
                 }
               },
               child: Text('Se connecter'),
+            ),
+            SizedBox(height: 16.0),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Vous n'avez pas de compte ? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => InscriptionPage()), // Lien vers la page d'inscription
+                      );
+                    },
+                    child: Text(
+                      "S'inscrire",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

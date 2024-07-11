@@ -1,44 +1,53 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../config.dart';
 
 class InscriptionService {
   Dio _dio = Dio();
 
-  Future<int?> _getUserIdByEmail(String email) async {
+  Future<bool> checkEmailExists(String email) async {
     try {
       final response = await _dio.get(
-        Config.apiUrl + '/api/Utilisateurs/idByMail/$email',
+        Config.apiUrl + '/api/Utilisateurs/name/$email',
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
-
-      if (response.statusCode == 200) {
-        return response.data as int;
-      } else {
-        throw Exception("Failed to retrieve user ID. Code: ${response.statusCode}");
-      }
+      return response.statusCode == 200;
     } catch (e) {
-      print('Exception while retrieving user ID: $e');
-      return null;
+      return false;
     }
   }
 
-  Future<bool> inscription(String nom, String prenom, int age, String email, String mdp, String repeatmdp) async {
+  Future<bool> checkUsernameExists(String username) async {
     try {
-      if (mdp != repeatmdp) {
-        Fluttertoast.showToast(
-          msg: "Les mots de passe ne correspondent pas.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-        return false;
-      }
+      final response = await _dio.get(
+        Config.apiUrl + '/api/Utilisateurs/username/$username',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
 
+  Future<String> inscription(String nom, String prenom, int age, String email, String mdp, String repeatmdp) async {
+    if (mdp != repeatmdp) {
+      return 'password_mismatch';
+    }
+
+    bool emailExists = await checkEmailExists(email);
+    if (emailExists) {
+      return 'email_exists';
+    }
+
+    bool usernameExists = await checkUsernameExists(nom);
+    if (usernameExists) {
+      return 'username_exists';
+    }
+
+    try {
       final response = await _dio.post(
         Config.apiUrl + '/api/Utilisateurs',
         data: {
@@ -54,15 +63,7 @@ class InscriptionService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print("Inscription réussie pour l'utilisateur: $email");
-
-        // Get the user ID using the email
-        int? userId = await _getUserIdByEmail(email);
-        print(userId);
-        if (userId == null) {
-          throw Exception("Failed to retrieve the user ID after registration.");
-        }
-
+        int userId = response.data['idUtilisateur'];
         final membreResponse = await _dio.post(
           Config.apiUrl + '/api/Membres/CreateWithUserId',
           data: {
@@ -74,29 +75,15 @@ class InscriptionService {
         );
 
         if (membreResponse.statusCode == 200 || membreResponse.statusCode == 201) {
-          print("Enregistrement réussi en tant que membre.");
-          return true;
+          return 'success';
         } else {
-          throw Exception("Échec de l'insertion dans Membre. Code: ${membreResponse.statusCode}");
+          return 'member_creation_failed';
         }
       } else {
-        print("Échec de l'inscription. Code: ${response.statusCode}, Body: ${response.data}");
-        throw Exception("Échec de l'inscription. Code: ${response.statusCode}");
+        return 'registration_failed';
       }
-    } on DioError catch (dioError) {
-      // Log the server response
-      print('DioError lors de l\'inscription: ${dioError.response?.data}');
-      Fluttertoast.showToast(
-        msg: "Erreur lors de l'inscription: ${dioError.response?.data['message'] ?? dioError.message}",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-      return false;
     } catch (e) {
-      print('Exception lors de l\'inscription: $e');
-      return false;
+      return 'error';
     }
   }
 }

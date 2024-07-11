@@ -18,6 +18,7 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
   final ConversationDetailService _conversationDetailService = ConversationDetailService();
   final MessagesService _messageService = MessagesService();
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
   late Future<List<MessageDetail>> _messagesFuture;
 
@@ -33,6 +34,14 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
     });
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
+
   Future<void> _sendMessage() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -43,9 +52,10 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
         );
         _messageController.clear();
         _fetchMessages();
+        _scrollToBottom();
         Fluttertoast.showToast(
           msg: "Message envoyé",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.green,
           textColor: Colors.white,
@@ -54,7 +64,7 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
       } catch (error) {
         Fluttertoast.showToast(
           msg: "Failed to send message: $error",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.red,
           textColor: Colors.white,
@@ -84,7 +94,11 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
                   return Center(child: Text('No messages found'));
                 } else {
                   final messages = snapshot.data!;
+                  WidgetsBinding.instance?.addPostFrameCallback((_) {
+                    _scrollToBottom();
+                  });
                   return ListView.builder(
+                    controller: _scrollController,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
@@ -130,12 +144,12 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
                     child: TextFormField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: 'Enter your message',
+                        hintText: 'Envoyer le message',
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a message';
+                          return 'Écrivez votre message';
                         }
                         return null;
                       },
@@ -144,7 +158,7 @@ class _ConversationMessagesPageState extends State<ConversationMessagesPage> {
                   SizedBox(width: 8.0),
                   ElevatedButton(
                     onPressed: _sendMessage,
-                    child: Text('Send'),
+                    child: Text('Envoyer'),
                   ),
                 ],
               ),
