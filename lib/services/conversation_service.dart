@@ -7,10 +7,12 @@ class MessageService {
   final Dio _dio = Dio();
 
   Future<List<conversation.Conversation>> getUserConversations(int userId) async {
+    final String url = '${Config.apiUrl}/api/EnvoyerRecevoirs/Conversations/$userId';
     print('Fetching conversations for user: $userId');
+    print('Request URL: $url');
 
     try {
-      final response = await _dio.get('${Config.apiUrl}/api/EnvoyerRecevoirs/Conversations/$userId');
+      final response = await _dio.get(url);
 
       if (response.statusCode == 200) {
         print('Response received: ${response.data}');

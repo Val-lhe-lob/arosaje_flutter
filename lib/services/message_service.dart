@@ -1,3 +1,4 @@
+import 'package:arosaje_flutter/models/message_detail_model.dart';
 import 'package:dio/dio.dart';
 import 'package:arosaje_flutter/models/message_model.dart';
 import '../config.dart';

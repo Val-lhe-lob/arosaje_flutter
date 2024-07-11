@@ -1,7 +1,7 @@
-import 'package:arosaje_flutter/models/conversation_model.dart';
 import 'package:arosaje_flutter/pages/conservation_message_page.dart';
 import 'package:arosaje_flutter/services/conversation_service.dart';
 import 'package:flutter/material.dart';
+import 'package:arosaje_flutter/models/conversation_model.dart';
 import 'package:arosaje_flutter/services/message_service.dart';
 
 class ConversationsWidget extends StatelessWidget {
@@ -27,20 +27,28 @@ class ConversationsWidget extends StatelessWidget {
             itemCount: conversations.length,
             itemBuilder: (context, index) {
               final conversation = conversations[index];
-              return ListTile(
-                title: Text('Conversation with User ${conversation.userId}'),
-                subtitle: Text('Last Message ID: ${conversation.lastMessage.idMessage}'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ConversationMessagesPage(
-                        userId: userId,
-                        conversationUserId: conversation.userId,
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 5.0),
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Colors.green[100],
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: ListTile(
+                  title: Text('Conversation with ${conversation.userName}'),
+                  subtitle: Text('Last Message: ${conversation.lastMessage.contenu}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ConversationMessagesPage(
+                          userId: userId,
+                          conversationUserId: conversation.userId,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           );
