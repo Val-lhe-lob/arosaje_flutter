@@ -1,4 +1,4 @@
-import 'package:arosaje_flutter/widgets/conversation_widget.dart';
+import 'package:arosaje_flutter/widgets/conversations_widget.dart';
 import 'package:flutter/material.dart';
 
 class ConversationsPage extends StatelessWidget {

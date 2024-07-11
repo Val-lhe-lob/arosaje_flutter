@@ -1,21 +1,14 @@
 class Conversation {
   final int userId;
-  final int idUtilisateur;
-  final int idUtilisateur1;
+  final String userName;
   final LastMessage lastMessage;
 
-  Conversation({
-    required this.userId,
-    required this.idUtilisateur,
-    required this.idUtilisateur1,
-    required this.lastMessage,
-  });
+  Conversation({required this.userId, required this.userName, required this.lastMessage});
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
-      userId: json['userId'] ?? 0,
-      idUtilisateur: json['idUtilisateur'] ?? 0,
-      idUtilisateur1: json['idUtilisateur1'] ?? 0,
+      userId: json['userId'],
+      userName: json['userName'],
       lastMessage: LastMessage.fromJson(json['lastMessage']),
     );
   }
@@ -23,12 +16,14 @@ class Conversation {
 
 class LastMessage {
   final int idMessage;
+  final String contenu;
 
-  LastMessage({required this.idMessage});
+  LastMessage({required this.idMessage, required this.contenu});
 
   factory LastMessage.fromJson(Map<String, dynamic> json) {
     return LastMessage(
-      idMessage: json['idMessage'] ?? 0,
+      idMessage: json['idMessage'],
+      contenu: json['contenu'],
     );
   }
 }
